@@ -15,8 +15,8 @@ const LANGS = [
   },
   {
     value: 'de',
-    label: 'German',
-    icon: '/assets/icons/ic_flag_de.svg',
+    label: 'Swahili',
+    icon: '/assets/icons/ic_flag_ke.svg',
   },
   {
     value: 'fr',

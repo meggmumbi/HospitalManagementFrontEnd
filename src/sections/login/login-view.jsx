@@ -39,6 +39,8 @@ export default function LoginView() {
     password: '',
   });
 
+  const [user, setUser] = useState(null); // State to store user data
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
    
@@ -64,8 +66,10 @@ export default function LoginView() {
       });
   
       if (response.ok) {
-        // The login was successful, you can navigate to the dashboard or perform other actions
-        router.push('/');
+        const userData = await response.json(); 
+        setUser(userData); 
+       
+        router.push('dashboard');
       } else {
         // Handle login errors, for example, display an error message
          // Display an error toast message when login fails
@@ -119,6 +123,7 @@ export default function LoginView() {
       >
         Login
       </LoadingButton>
+     
     </>
   );
 
