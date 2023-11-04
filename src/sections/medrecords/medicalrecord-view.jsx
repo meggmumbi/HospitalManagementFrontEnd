@@ -15,7 +15,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../user/table-no-data';
-import TableRow from './patient-table-row';
+import TableRow from './medicalrecord-table-row';
 import TableHead from '../user/user-table-head'
 import TableEmptyRows from '../user/table-empty-rows';
 import TableToolbar from '../user/user-table-toolbar';
@@ -23,20 +23,20 @@ import { emptyRows, applyFilter, getComparator } from '../user/utils';
 
 // ----------------------------------------------------------------------
 
-export default function PatientPage() {
+export default function MedicalRecordPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('patientId');
 
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [patients, setPatients] = useState([]);
+  const [records, setRecords] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -45,8 +45,8 @@ export default function PatientPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/patients');
-        setPatients(response.data); 
+        const response = await axios.get('http://localhost:8080/api/v1/medicalHistories');
+        setRecords(response.data); 
         setLoading(false);
       } catch (err) {
         setError(err);
@@ -67,18 +67,18 @@ export default function PatientPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = patients.map((n) => n.name);
+      const newSelecteds = records.map((n) => n.patientId);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, patientId) => {
+    const selectedIndex = selected.indexOf(patientId);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, patientId);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -107,11 +107,10 @@ export default function PatientPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: patients,
+    inputData: records,
     comparator: getComparator(order, orderBy),
     filterName,
   });
-  
 
   const notFound = !dataFiltered.length && !!filterName;
 
@@ -133,11 +132,9 @@ export default function PatientPage() {
       <div>
         
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Patients</Typography>
+        <Typography variant="h4">Medical History</Typography>
 
-        <Button variant="contained" color="inherit"   startIcon={<Iconify icon="eva:plus-fill" />}>
-          New Patient
-        </Button>
+    
       </Stack>
 
       <Card>
@@ -153,18 +150,17 @@ export default function PatientPage() {
               <TableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={patients.length}
+                rowCount={records.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'gender', label: 'Gender' },
-                  { id: 'contacts', label: 'Contacts' },
-                  { id: 'age', label: 'Age' },
-                  { id: 'insuranceDetails', label: 'InsuranceDetails' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'patientId', label: 'PatientId' },
+                  { id: 'diagnosis', label: 'Diagnosis' },
+                  { id: 'background', label: 'Background' },
+                  { id: 'symptoms', label: 'Symptoms' },  
+                  {id: 'remarks', label: 'Remarks'},
+                  {id: 'dateCreated', label: 'DateCreated'},         
                   { id: '' },
                 ]}
               />
@@ -173,21 +169,22 @@ export default function PatientPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <TableRow
-                      key={row.patientId}
-                      name={row.name}
-                      gender={row.gender}
-                      contacts={row.contacts}
-                      insuranceDetails={row.insuranceDetails}
-                      age={row.age}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
+                      key={row.medicalHistoryId}
+                      patientId={row.patientId}
+                      diagnosis={row.diagnosis}
+                      background={row.background}
+                      symptoms={row.symptoms}
+                      remarks={row.remarks}
+                      dateCreated={row.dateCreated}
+                     
+                      selected={selected.indexOf(row.patientId) !== -1}
+                      handleClick={(event) => handleClick(event, row.patientId)}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, patients.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, records.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -199,7 +196,7 @@ export default function PatientPage() {
         <TablePagination
           page={page}
           component="div"
-          count={patients.length}
+          count={records.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
