@@ -10,7 +10,7 @@ const icon = (name) => (
 const navConfig = [
   {
     title: 'dashboard',
-    path: '/',
+    path: '/dashboard',
     icon: icon('ic_analytics'),
   },
   {
@@ -30,7 +30,7 @@ const navConfig = [
   },
   {
     title: 'Pharmacy',
-    path: '/products',
+    path: '/pharmacy',
     icon: icon('ic_pharmacy'),
   },
   {
@@ -50,12 +50,12 @@ const navConfig = [
   },
   {
     title: 'Hospital',
-    path: '',
+    path: '/hospital',
     icon: icon('ic_hospital'),
   },
   {
     title: 'Medical Records',
-    path: '',
+    path: '/medicalHistory',
     icon: icon('ic_medical-records'),
   },
   {

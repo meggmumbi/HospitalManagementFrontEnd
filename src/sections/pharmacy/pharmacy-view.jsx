@@ -15,7 +15,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../user/table-no-data';
-import TableRow from './patient-table-row';
+import TableRow from './pharmacy-table-row';
 import TableHead from '../user/user-table-head'
 import TableEmptyRows from '../user/table-empty-rows';
 import TableToolbar from '../user/user-table-toolbar';
@@ -23,7 +23,7 @@ import { emptyRows, applyFilter, getComparator } from '../user/utils';
 
 // ----------------------------------------------------------------------
 
-export default function PatientPage() {
+export default function HospitalPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -36,7 +36,7 @@ export default function PatientPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [patients, setPatients] = useState([]);
+  const [pharmacy, setPharmacy] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -45,8 +45,8 @@ export default function PatientPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/patients');
-        setPatients(response.data); 
+        const response = await axios.get('http://localhost:8080/api/v1/pharmacies');
+        setPharmacy(response.data); 
         setLoading(false);
       } catch (err) {
         setError(err);
@@ -67,7 +67,7 @@ export default function PatientPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = patients.map((n) => n.name);
+      const newSelecteds = pharmacy.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -107,11 +107,10 @@ export default function PatientPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: patients,
+    inputData: pharmacy,
     comparator: getComparator(order, orderBy),
     filterName,
   });
-  
 
   const notFound = !dataFiltered.length && !!filterName;
 
@@ -133,10 +132,10 @@ export default function PatientPage() {
       <div>
         
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Patients</Typography>
+        <Typography variant="h4">Pharmacy items</Typography>
 
-        <Button variant="contained" color="inherit"   startIcon={<Iconify icon="eva:plus-fill" />}>
-          New Patient
+        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          New pharmacy item
         </Button>
       </Stack>
 
@@ -153,18 +152,16 @@ export default function PatientPage() {
               <TableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={patients.length}
+                rowCount={pharmacy.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'gender', label: 'Gender' },
-                  { id: 'contacts', label: 'Contacts' },
-                  { id: 'age', label: 'Age' },
-                  { id: 'insuranceDetails', label: 'InsuranceDetails' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'category', label: 'Category' },
+                  { id: 'quantity', label: 'Quantity' },
+                  { id: 'unitPrice', label: 'UnitPrice' },  
+                  { id: 'supplierInformation', label: 'SupplierInformation' },                
                   { id: '' },
                 ]}
               />
@@ -173,13 +170,13 @@ export default function PatientPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <TableRow
-                      key={row.patientId}
+                      key={row.itemId}
                       name={row.name}
-                      gender={row.gender}
-                      contacts={row.contacts}
-                      insuranceDetails={row.insuranceDetails}
-                      age={row.age}
-                      isVerified={row.isVerified}
+                      category={row.category}
+                      quantity={row.quantity}
+                      unitPrice={row.unitPrice}
+                      supplierInformation={row.supplierInformation}
+                     
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />
@@ -187,7 +184,7 @@ export default function PatientPage() {
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, patients.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, pharmacy.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -199,7 +196,7 @@ export default function PatientPage() {
         <TablePagination
           page={page}
           component="div"
-          count={patients.length}
+          count={pharmacy.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
