@@ -1,4 +1,6 @@
 import { faker } from '@faker-js/faker';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -19,6 +21,53 @@ import AppConversionRates from '../app-conversion-rates';
 // ----------------------------------------------------------------------
 
 export default function AppView() {
+  const [appointments, setAppointments] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [pharmacy, setPharmacy] = useState([]);
+
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/v1/appointments');
+      setAppointments(response.data); 
+     
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
+  fetchData();
+}, []); 
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/v1/patients');
+      setPatients(response.data); 
+     
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
+  fetchData();
+}, []); 
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/v1/pharmacies');
+      setPharmacy(response.data); 
+     
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
+  fetchData();
+}, []); 
+
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -29,7 +78,7 @@ export default function AppView() {
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Appointments"
-            total={714000}
+            total={appointments.length} 
             color="success"
             icon={<img alt="icon" src="/assets/icons/glass/apt.png" />}
           />
@@ -38,7 +87,7 @@ export default function AppView() {
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Patients"
-            total={1352831}
+            total={patients.length} 
             color="info"
             icon={<img alt="icon" src="/assets/icons/glass/patient.png" />}
           />
@@ -47,7 +96,7 @@ export default function AppView() {
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Pharmacy Items"
-            total={1723315}
+            total={pharmacy.length} 
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/medicine.png" />}
           />
