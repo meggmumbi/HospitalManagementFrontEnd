@@ -102,8 +102,18 @@ export default function PatientPage() {
       await axios.put(`http://localhost:8080/api/v1/patients/${selectedPatientId}`, updatedPatientInfo);
     
 
-    // Close the modal after a delay (e.g., 2 seconds)
-    setTimeout(() => {
+      toast.success(`Patient ${selectedPatientId} sent to the ${selectedAction}`, {
+        position: "top-right", 
+        autoClose: 1000, 
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true, 
+        draggable: true, 
+        progress: undefined, 
+        
+      });
+              
+      setTimeout(() => {
       closeModal();
 
       // Reload the page
@@ -111,6 +121,8 @@ export default function PatientPage() {
     }, 2000); // Adjust the delay as needed
      
     } catch (err) {
+
+      toast.error(`Could not send Patient ${selectedPatientId} to the ${selectedAction}`);
       console.error(err)
     }
     closeModal();
@@ -142,9 +154,8 @@ export default function PatientPage() {
   };
 
   const handleDelete = async (event, patientId) => {
-    console.log('handleDelete is being called'); // Add this line
-    try {
-      
+    console.log('handleDelete is being called'); 
+    try {      
       const response = await axios.delete(`http://localhost:8080/api/v1/patients/${patientId}`);
      
       console.log(response.data);
@@ -158,10 +169,12 @@ export default function PatientPage() {
         draggable: true, 
         progress: undefined, 
         
-      });
+      });   
 
-      
-    window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+
     } catch (errr) {
       toast.error('Something went wrong');
 

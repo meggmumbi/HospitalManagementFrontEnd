@@ -24,6 +24,7 @@ export default function HospitalTableRow({
   facilities,
   contacts,
   handleClick,
+  handleDelete,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -79,7 +80,7 @@ export default function HospitalTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
@@ -89,6 +90,7 @@ export default function HospitalTableRow({
 }
 
 HospitalTableRow.propTypes = { 
+  handleDelete: PropTypes.func,
   handleClick: PropTypes.func,
   location: PropTypes.any,
   name: PropTypes.any,

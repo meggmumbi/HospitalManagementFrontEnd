@@ -1,5 +1,7 @@
 import { useState,useEffect } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import {toast ,ToastContainer} from 'react-toastify';
 import axios from 'axios';
 
 import Card from '@mui/material/Card';
@@ -109,6 +111,34 @@ export default function HospitalPage() {
     setFilterName(event.target.value);
   };
 
+  const handleDelete = async (event, itemId) => {
+    console.log('handleDelete is being called');
+    try {      
+      const response = await axios.delete(`http://localhost:8080/api/v1/pharmacies/${itemId}`);
+     
+      console.log(response.data);
+      
+      toast.success("Item deleted successfully", {
+        position: "top-right", 
+        autoClose: 1000, 
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true, 
+        draggable: true, 
+        progress: undefined, 
+        
+      });      
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+
+    } catch (errr) {
+      toast.error('Something went wrong');
+
+      console.error(errr);
+    }
+  };
+
   const dataFiltered = applyFilter({
     inputData: pharmacy,
     comparator: getComparator(order, orderBy),
@@ -182,6 +212,7 @@ export default function HospitalPage() {
                      
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
+                      handleDelete={(event) => handleDelete(event, row.itemId)}
                     />
                   ))}
 
@@ -208,6 +239,7 @@ export default function HospitalPage() {
       </Card>
       </div>
     )}
+     <ToastContainer />
     </Container>
   );
 }

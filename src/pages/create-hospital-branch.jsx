@@ -25,13 +25,13 @@ import { Label } from '@mui/icons-material';
 
 // ----------------------------------------------------------------------
 
-export default function CreateNewItemPage() {
+export default function CreateNewBranchPage() {
     const [formData, setFormData] = useState({
         name: '',
-        category: '',
-        quantity: '',
-        unitPrice: '',
-        supplierInformation: ''
+        location: '',
+        contacts: '',
+        specialization: '',
+       
       });
       const router = useRouter();
       const [loading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ export default function CreateNewItemPage() {
         setLoading(true);
       
         // Define the endpoint URL
-        const url = 'http://localhost:8080/api/v1/pharmacies';
+        const url = 'http://localhost:8080/api/v1/hospital';
       
         // Make a POST request with axios
         axios.post(url, formData)
@@ -51,7 +51,7 @@ export default function CreateNewItemPage() {
             setLoading(false);
             
           
-            toast.success("Item added successfully", {
+            toast.success("Branch added successfully", {
               position: "top-right", 
               autoClose: 1000, 
               hideProgressBar: false,
@@ -59,7 +59,7 @@ export default function CreateNewItemPage() {
               pauseOnHover: true, 
               draggable: true, 
               progress: undefined, 
-              onClose: () => router.push('/pharmacy')
+              onClose: () => router.push('/hospital')
             });
                        
 
@@ -128,9 +128,9 @@ const labelStyle = {
           label="Home"
        
         />
-        <StyledBreadcrumb component="a" href="/pharmacy" label="Pharmacy Items" />
+        <StyledBreadcrumb component="a" href="/hospital" label="Hospital Info" />
         <StyledBreadcrumb
-          label="New Pharmacy Item"
+          label="New Hospital Branch"
          
         />
       </Breadcrumbs>
@@ -141,7 +141,7 @@ const labelStyle = {
             <TableBody>
               <TableRow>
                 <TableCell style={labelStyle}>
-                  <Label htmlFor="name">Item Name</Label>
+                  <Label htmlFor="name">Hospital Name</Label>
                 </TableCell>
                 <TableCell>
                   <TextField
@@ -160,15 +160,15 @@ const labelStyle = {
               </TableRow>
               <TableRow>
                 <TableCell style={labelStyle}>
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="location">Location</Label>
                 </TableCell>
                 <TableCell>
                   <TextField
-                    id="category"
-                    name="category"  
-                    label="category"          
+                    id="location"
+                    name="location"  
+                    label="location"          
                     type="text"
-                    value={formData.category}
+                    value={formData.location}
                     onChange={handleChange}
                     variant="outlined"
                     fullWidth
@@ -179,15 +179,15 @@ const labelStyle = {
               </TableRow>
           <TableRow>
             <TableCell style={labelStyle}>
-              <Label htmlFor="quantity">Quantity</Label>
+              <Label htmlFor="contacts">Contacts</Label>
             </TableCell>
               <TableCell>
                 <TextField
-                  id="quantity"
-                  name="quantity"
-                  label="Quantity"
-                  type="number"
-                  value={formData.quantity}
+                  id="contacts"
+                  name="contacts"
+                  label="contacts"
+                  type="text"
+                  value={formData.contacts}
                   onChange={handleChange}
                   variant="outlined"
                   fullWidth
@@ -198,15 +198,15 @@ const labelStyle = {
       
               <TableRow>
                 <TableCell style={labelStyle}>
-                  <Label htmlFor="unitPrice">Unit Price</Label>
+                  <Label htmlFor="specialization">Specialization</Label>
                 </TableCell>
                 <TableCell>
                   <TextField
-                    id="unitPrice"
-                    name="unitPrice"
-                    label="Unit Price"
-                    type="number"
-                    value={formData.unitPrice}
+                    id="specialization"
+                    name="specialization"
+                    label="specialization"
+                    type="text"
+                    value={formData.specialization}
                     onChange={handleChange}
                     variant="outlined"
                     fullWidth
@@ -214,24 +214,22 @@ const labelStyle = {
                   />
                </TableCell>
             </TableRow>
-               <TableRow>
+            <TableRow>
                 <TableCell style={labelStyle}>
-                <Label htmlFor="supplierInformation">Supplier Information:</Label>
+                  <Label htmlFor="datecreated">Date:</Label>
                 </TableCell>
                 <TableCell>
                   <TextField
-                    id="supplierInformation"
-                    name="supplierInformation"
-                    label="Supplier Information"
-                    type="text"
-                    value={formData.insuranceDetails}
-                    onChange={handleChange}
-                    variant="outlined"
+                    id="datecreated"
+                    type="date"
+                    variant="filled"
+                    label="Date"                    
+                    name="datecreated"
                     fullWidth
-                    required
                   />
                 </TableCell>
-              </TableRow>           
+              </TableRow>
+                        
             </TableBody>
           </Table>
         </TableContainer>
@@ -253,7 +251,7 @@ const labelStyle = {
                 {loading ? (
               <CircularProgress size={24} color="inherit" /> 
             ) : (
-              ' Add Item'
+              ' Add Branch'
             )}
            
           </Button>         

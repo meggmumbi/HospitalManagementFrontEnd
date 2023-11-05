@@ -24,6 +24,7 @@ export default function PharmacyTableRow({
   unitPrice,
   supplierInformation,
   handleClick,
+  handleDelete,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -78,7 +79,7 @@ export default function PharmacyTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
@@ -89,6 +90,7 @@ export default function PharmacyTableRow({
 
 PharmacyTableRow.propTypes = { 
   handleClick: PropTypes.func,
+  handleDelete: PropTypes.func,
   category: PropTypes.any,
   name: PropTypes.any,
   supplierInformation: PropTypes.any,
