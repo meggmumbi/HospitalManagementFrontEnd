@@ -17,7 +17,6 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import { Select,Modal,MenuItem,FormControl,InputLabel } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 
 import Iconify from 'src/components/iconify';
@@ -59,7 +58,7 @@ export default function PatientPage() {
 
   const [selectedPatientId, setSelectedPatientId] = useState('');
   
-  const [showSuccessIcon, setShowSuccessIcon] = useState(false);
+  
 
 
   const navigate = useNavigate();
@@ -101,8 +100,7 @@ export default function PatientPage() {
       };
   
       await axios.put(`http://localhost:8080/api/v1/patients/${selectedPatientId}`, updatedPatientInfo);
-        // Show the success icon
-    setShowSuccessIcon(true);
+    
 
     // Close the modal after a delay (e.g., 2 seconds)
     setTimeout(() => {
@@ -217,9 +215,7 @@ export default function PatientPage() {
 <Modal open={modalOpen} onClose={closeModal}>
   <div className="modal-content">
     <Typography variant="h6">Patient ID: {selectedPatientId}</Typography>
-    {showSuccessIcon ? (
-            <CheckCircleIcon color="success" fontSize="large" />
-          ) : (
+   
     <FormControl variant="outlined" fullWidth>
       <InputLabel id="action">Action</InputLabel>
       <Select
@@ -241,7 +237,7 @@ export default function PatientPage() {
         <MenuItem value="Accounts">Send to Accounts</MenuItem>
       </Select>
     </FormControl>
-)}
+
     <Button variant="contained" color="primary" onClick={sendAction}>
       Save Action
     </Button>
