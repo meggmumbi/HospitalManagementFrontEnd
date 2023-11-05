@@ -1,7 +1,10 @@
 import { useState,useEffect } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import {toast ,ToastContainer} from 'react-toastify';
 
 import axios from 'axios';
+
 
 import 'src/modal.css';
 import Card from '@mui/material/Card';
@@ -14,6 +17,8 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import { Select,Modal,MenuItem,FormControl,InputLabel } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -24,8 +29,6 @@ import TableHead from '../user/user-table-head'
 import TableEmptyRows from '../user/table-empty-rows';
 import TableToolbar from '../user/user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../user/utils';
-
-
 
 // ----------------------------------------------------------------------
 
@@ -55,6 +58,9 @@ export default function PatientPage() {
   const [selectedAction, setSelectedAction] = useState('');
 
   const [selectedPatientId, setSelectedPatientId] = useState('');
+  
+  const [showSuccessIcon, setShowSuccessIcon] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -95,7 +101,17 @@ export default function PatientPage() {
       };
   
       await axios.put(`http://localhost:8080/api/v1/patients/${selectedPatientId}`, updatedPatientInfo);
-      // Add any additional handling for success
+        // Show the success icon
+    setShowSuccessIcon(true);
+
+    // Close the modal after a delay (e.g., 2 seconds)
+    setTimeout(() => {
+      closeModal();
+
+      // Reload the page
+      window.location.reload();
+    }, 2000); // Adjust the delay as needed
+     
     } catch (err) {
       console.error(err)
     }
@@ -125,6 +141,34 @@ export default function PatientPage() {
   const handleModal = (event, patientId) => {
     setSelectedPatientId(patientId);
     setModalOpen(true);
+  };
+
+  const handleDelete = async (event, patientId) => {
+    console.log('handleDelete is being called'); // Add this line
+    try {
+      
+      const response = await axios.delete(`http://localhost:8080/api/v1/patients/${patientId}`);
+     
+      console.log(response.data);
+      
+      toast.success("Patient deleted successfully", {
+        position: "top-right", 
+        autoClose: 1000, 
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true, 
+        draggable: true, 
+        progress: undefined, 
+        
+      });
+
+      
+    window.location.reload();
+    } catch (errr) {
+      toast.error('Something went wrong');
+
+      console.error(errr);
+    }
   };
 
   const handleClick = (event, name) => {
@@ -170,49 +214,42 @@ export default function PatientPage() {
 
   return (    
     <Container>
+<Modal open={modalOpen} onClose={closeModal}>
+  <div className="modal-content">
+    <Typography variant="h6">Patient ID: {selectedPatientId}</Typography>
+    {showSuccessIcon ? (
+            <CheckCircleIcon color="success" fontSize="large" />
+          ) : (
+    <FormControl variant="outlined" fullWidth>
+      <InputLabel id="action">Action</InputLabel>
+      <Select
+        id="action"
+        name="action"
+        labelId="action-label"
+        label="Action"
+        value={selectedAction}
+        onChange={handleActionSelect}
+        required
+      >
+        <MenuItem value="">
+          <em>Select</em>
+        </MenuItem>
+        <MenuItem value="Triage">Send to Triage</MenuItem>
+        <MenuItem value="Doctor">Send to Doctor</MenuItem>
+        <MenuItem value="Lab">Send to Lab</MenuItem>
+        <MenuItem value="Pharmacy">Send to Pharmacy</MenuItem>
+        <MenuItem value="Accounts">Send to Accounts</MenuItem>
+      </Select>
+    </FormControl>
+)}
+    <Button variant="contained" color="primary" onClick={sendAction}>
+      Save Action
+    </Button>
+    
+  </div>
+</Modal>
 
-        <Modal open={modalOpen} onClose={closeModal} style={{ position: 'fixed',top: 0, left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-                <div style={{  position: 'relative',margin: 'auto',maxWidth: '80%', maxHeight: '80%',background: 'white',
-  padding: '20px',
-  borderRadius: '10px',
-  display: 'flex',flexDirection: 'column',alignItems: 'center',justifyContent: 'space-between'}}>
-                  <Typography variant="h6">Patient ID: {selectedPatientId}</Typography>
 
-
-                  <FormControl
-                    variant="outlined"
-                    fullWidth
-                  >
-                    <InputLabel id="action">Action</InputLabel>
-                      <Select
-                        id="action"
-                        name="action"
-                        labelId="action-label"
-                        label="Action"
-                        value={selectedAction}
-                        onChange={handleActionSelect}
-                        required
-                      >
-                        <MenuItem value="">
-                          <em>Select</em>
-                        </MenuItem>
-                        <MenuItem value="Triage">Send to Triage</MenuItem>
-                    <MenuItem value="Doctor">Send to Doctor</MenuItem>
-                    <MenuItem value="Lab">Send to Lab</MenuItem>
-                    <MenuItem value="Pharmacy">Send to Pharmacy</MenuItem>
-                    <MenuItem value="Accounts">Send to Accounts</MenuItem>
-                      </Select>
-                  </FormControl>
-
-                 
-                  <Button variant="contained" color="primary" onClick={sendAction}>
-                    Save Action
-                  </Button>
-                </div>
-              </Modal>
          {loading && (
       <div>
         
@@ -281,6 +318,7 @@ export default function PatientPage() {
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                       handleModal={(event) => handleModal(event, row.patientId)}
+                      handleDelete={(event) => handleDelete(event, row.patientId)}
                     />
                   ))}
 
@@ -305,8 +343,10 @@ export default function PatientPage() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
+     
       </div>
     )}
+     <ToastContainer />
     </Container>
   );
 }

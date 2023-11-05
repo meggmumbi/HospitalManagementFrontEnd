@@ -31,6 +31,7 @@ export default function PatientTableRow({
   status,
   handleClick,
   handleModal,
+  handleDelete,
 
 }) {
   const [open, setOpen] = useState(null);
@@ -110,8 +111,10 @@ export default function PatientTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>         
+          
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+         
           Delete
         </MenuItem>
       </Popover>
@@ -125,6 +128,7 @@ PatientTableRow.propTypes = {
   gender: PropTypes.any,
   handleClick: PropTypes.func,
   handleModal: PropTypes.func,
+  handleDelete: PropTypes.func,
   isVerified: PropTypes.any,
   name: PropTypes.any,
   age: PropTypes.any,
