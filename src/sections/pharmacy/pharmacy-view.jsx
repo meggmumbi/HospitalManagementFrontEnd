@@ -1,4 +1,5 @@
 import { useState,useEffect } from 'react';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 
 import Card from '@mui/material/Card';
@@ -41,6 +42,8 @@ export default function HospitalPage() {
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,7 +137,7 @@ export default function HospitalPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Pharmacy items</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button variant="contained" color="inherit" onClick={() => navigate('/createItem')} startIcon={<Iconify icon="eva:plus-fill" />}>
           New pharmacy item
         </Button>
       </Stack>

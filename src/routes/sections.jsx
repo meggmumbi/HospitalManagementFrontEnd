@@ -12,6 +12,8 @@ export const PatientPage = lazy(() => import('src/pages/patient'));
 export const PharmacyPage = lazy(() => import('src/pages/pharmacy'));
 export const HospitalPage = lazy(() => import('src/pages/hospital'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medicalHistory'));
+export const CreateNewPatientPage = lazy(() => import('src/pages/create-new-patient'));
+export const CreateNewItemPage = lazy(() => import('src/pages/create-new-item'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -35,6 +37,8 @@ export default function Router() {
         { path: 'pharmacy', element: <PharmacyPage /> },
         { path: 'hospital', element: <HospitalPage /> },
         { path: 'medicalHistory', element: <MedicalHistoryPage /> },
+        { path: 'createPatient', element: <CreateNewPatientPage /> },
+        { path: 'createItem', element: <CreateNewItemPage /> },
       ],
     },
     {

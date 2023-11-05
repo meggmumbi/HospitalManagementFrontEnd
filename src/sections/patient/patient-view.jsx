@@ -1,6 +1,9 @@
 import { useState,useEffect } from 'react';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+
 import axios from 'axios';
 
+import 'src/modal.css';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -10,6 +13,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { Select,Modal,MenuItem,FormControl,InputLabel } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -20,6 +24,8 @@ import TableHead from '../user/user-table-head'
 import TableEmptyRows from '../user/table-empty-rows';
 import TableToolbar from '../user/user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../user/utils';
+
+
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +48,18 @@ export default function PatientPage() {
 
   const [error, setError] = useState(null);
 
+
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [selectedAction, setSelectedAction] = useState('');
+
+  const [selectedPatientId, setSelectedPatientId] = useState('');
+
+  const navigate = useNavigate();
+
+  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,6 +74,36 @@ export default function PatientPage() {
 
     fetchData();
   }, []); 
+
+
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedAction('');
+    setSelectedPatientId('');
+  };
+
+  const handleActionSelect = (event) => {
+    setSelectedAction(event.target.value);
+  };
+  const sendAction = async () => {
+    try {
+      
+      const updatedPatientInfo = {
+        
+        status: selectedAction,
+      };
+  
+      await axios.put(`http://localhost:8080/api/v1/patients/${selectedPatientId}`, updatedPatientInfo);
+      // Add any additional handling for success
+    } catch (err) {
+      console.error(err)
+    }
+    closeModal();
+  };
+  
+  
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -72,6 +120,11 @@ export default function PatientPage() {
       return;
     }
     setSelected([]);
+  };
+
+  const handleModal = (event, patientId) => {
+    setSelectedPatientId(patientId);
+    setModalOpen(true);
   };
 
   const handleClick = (event, name) => {
@@ -115,8 +168,51 @@ export default function PatientPage() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
-  return (
+  return (    
     <Container>
+
+        <Modal open={modalOpen} onClose={closeModal} style={{ position: 'fixed',top: 0, left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                <div style={{  position: 'relative',margin: 'auto',maxWidth: '80%', maxHeight: '80%',background: 'white',
+  padding: '20px',
+  borderRadius: '10px',
+  display: 'flex',flexDirection: 'column',alignItems: 'center',justifyContent: 'space-between'}}>
+                  <Typography variant="h6">Patient ID: {selectedPatientId}</Typography>
+
+
+                  <FormControl
+                    variant="outlined"
+                    fullWidth
+                  >
+                    <InputLabel id="action">Action</InputLabel>
+                      <Select
+                        id="action"
+                        name="action"
+                        labelId="action-label"
+                        label="Action"
+                        value={selectedAction}
+                        onChange={handleActionSelect}
+                        required
+                      >
+                        <MenuItem value="">
+                          <em>Select</em>
+                        </MenuItem>
+                        <MenuItem value="Triage">Send to Triage</MenuItem>
+                    <MenuItem value="Doctor">Send to Doctor</MenuItem>
+                    <MenuItem value="Lab">Send to Lab</MenuItem>
+                    <MenuItem value="Pharmacy">Send to Pharmacy</MenuItem>
+                    <MenuItem value="Accounts">Send to Accounts</MenuItem>
+                      </Select>
+                  </FormControl>
+
+                 
+                  <Button variant="contained" color="primary" onClick={sendAction}>
+                    Save Action
+                  </Button>
+                </div>
+              </Modal>
          {loading && (
       <div>
         
@@ -135,7 +231,7 @@ export default function PatientPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Patients</Typography>
 
-        <Button variant="contained" color="inherit"   startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button variant="contained" color="inherit"  onClick={() => navigate('/createPatient')}  startIcon={<Iconify icon="eva:plus-fill" />}>
           New Patient
         </Button>
       </Stack>
@@ -165,6 +261,7 @@ export default function PatientPage() {
                   { id: 'insuranceDetails', label: 'InsuranceDetails' },
                   { id: 'isVerified', label: 'Verified', align: 'center' },
                   { id: 'status', label: 'Status' },
+                  {id: ''},
                   { id: '' },
                 ]}
               />
@@ -180,8 +277,10 @@ export default function PatientPage() {
                       insuranceDetails={row.insuranceDetails}
                       age={row.age}
                       isVerified={row.isVerified}
+                      status={row.status}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
+                      handleModal={(event) => handleModal(event, row.patientId)}
                     />
                   ))}
 
