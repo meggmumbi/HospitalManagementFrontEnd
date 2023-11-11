@@ -18,7 +18,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function PatientTableRow({
+export default function LabTableRow({
   selected,
   patientId,
   name,
@@ -27,12 +27,13 @@ export default function PatientTableRow({
   age,
   contacts,
   insuranceDetails,
-  isVerified,
+  
   status,
   handleClick,
-  handleModal,
-  handleDelete,
-  handleProfile,
+  handleRedirection,
+  handleGenerateReport,
+
+  
 
 }) {
   const [open, setOpen] = useState(null);
@@ -50,10 +51,7 @@ export default function PatientTableRow({
 
   const colors = {
     Lab: 'error',
-    Triage: 'warning',
-    Doctor: 'success',
-    Pharmacy: 'info',
-    Accounts: 'primary'
+    Triage: 'warning',   
   };
   
 
@@ -78,66 +76,42 @@ export default function PatientTableRow({
         <TableCell>{age}</TableCell>
         <TableCell>{contacts}</TableCell>
         <TableCell>{insuranceDetails}</TableCell>
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
+        
 
         <TableCell>
         <Label color={colors[status] || 'default'}>{status}</Label>
         </TableCell>
 
-        <TableCell align="right">
-          <IconButton onClick={handleModal}> 
-            <Iconify icon="eva:edit-2-fill" />
-          </IconButton>
-        </TableCell>
-
-        <TableCell align="right">
-          <IconButton onClick={handleProfile}> 
+        <TableCell onClick={handleRedirection} align="right">
+          <IconButton> 
             <Iconify icon="eva:info-fill" />
           </IconButton>
         </TableCell>
+        {status === 'Lab' && (
+            <TableCell onClick={handleGenerateReport} align="right">
+            <IconButton> 
+              <Iconify icon="eva:file-text-outline" />
+            </IconButton>
+          </TableCell>
+          )} 
+       
 
-        <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell>
+     
       </TableRow>
 
-      <Popover
-        open={!!open}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: { width: 140 },
-        }}
-      >
-        <MenuItem onClick={handleCloseMenu}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>         
-          
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-         
-          Delete
-        </MenuItem>
-      </Popover>
+   
     </>
   );
 }
 
-PatientTableRow.propTypes = {
+LabTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   patientId: PropTypes.any,
   gender: PropTypes.any,
   handleClick: PropTypes.func,
-  handleModal: PropTypes.func,
-  handleDelete: PropTypes.func,
-  handleProfile:PropTypes.func,
-  isVerified: PropTypes.any,
+  handleRedirection: PropTypes.func,
+  handleGenerateReport: PropTypes,
+ 
   name: PropTypes.any,
   age: PropTypes.any,
   contacts: PropTypes.any,

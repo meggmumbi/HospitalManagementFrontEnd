@@ -27,6 +27,8 @@
     "@mui/icons-material": "^5.14.16",
     "@mui/lab": "^5.0.0-alpha.147",
     "@mui/material": "^5.14.16",
+    "@mui/styles": "^5.14.17",
+    "@mui/x-data-grid": "^6.18.1",
     "apexcharts": "^3.43.0",
     "axios": "^1.6.0",
     "date-fns": "^2.30.0",

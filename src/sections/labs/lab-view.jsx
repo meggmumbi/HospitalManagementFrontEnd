@@ -1,5 +1,6 @@
 import { useState,useEffect } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useNavigate,useParams, Routes, Route } from 'react-router-dom';
+import { useRouter } from 'src/routes/hooks';
 import 'react-toastify/dist/ReactToastify.css';
 import {toast ,ToastContainer} from 'react-toastify';
 
@@ -23,15 +24,19 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../user/table-no-data';
-import TableRow from './patient-table-row';
+import TableRow from './labs-table-row';
 import TableHead from '../user/user-table-head'
 import TableEmptyRows from '../user/table-empty-rows';
 import TableToolbar from '../user/user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../user/utils';
 
+
+
+
+
 // ----------------------------------------------------------------------
 
-export default function PatientPage() {
+export default function LabPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -50,13 +55,6 @@ export default function PatientPage() {
 
   const [error, setError] = useState(null);
 
-
-
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const [selectedAction, setSelectedAction] = useState('');
-
-  const [selectedPatientId, setSelectedPatientId] = useState('');
   
   
 
@@ -68,7 +66,7 @@ export default function PatientPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/patients');
+        const response = await axios.get('http://localhost:8080/api/v1/patients/getByStatus');
         setPatients(response.data); 
         setLoading(false);
       } catch (err) {
@@ -79,56 +77,6 @@ export default function PatientPage() {
 
     fetchData();
   }, []); 
-
-
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedAction('');
-    setSelectedPatientId('');
-  };
-
-  const handleActionSelect = (event) => {
-    setSelectedAction(event.target.value);
-  };
-  const sendAction = async () => {
-    try {
-      
-      const updatedPatientInfo = {
-        
-        status: selectedAction,
-      };
-  
-      await axios.put(`http://localhost:8080/api/v1/patients/${selectedPatientId}`, updatedPatientInfo);
-    
-
-      toast.success(`Patient ${selectedPatientId} sent to the ${selectedAction}`, {
-        position: "top-right", 
-        autoClose: 1000, 
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true, 
-        draggable: true, 
-        progress: undefined, 
-        
-      });
-              
-      setTimeout(() => {
-      closeModal();
-
-      // Reload the page
-      window.location.reload();
-    }, 2000); // Adjust the delay as needed
-     
-    } catch (err) {
-
-      toast.error(`Could not send Patient ${selectedPatientId} to the ${selectedAction}`);
-      console.error(err)
-    }
-    closeModal();
-  };
-  
-  
 
 
   const handleSort = (event, id) => {
@@ -146,40 +94,6 @@ export default function PatientPage() {
       return;
     }
     setSelected([]);
-  };
-
-  const handleModal = (event, patientId) => {
-    setSelectedPatientId(patientId);
-    setModalOpen(true);
-  };
-
-  const handleDelete = async (event, patientId) => {
-    console.log('handleDelete is being called'); 
-    try {      
-      const response = await axios.delete(`http://localhost:8080/api/v1/patients/${patientId}`);
-     
-      console.log(response.data);
-      
-      toast.success("Patient deleted successfully", {
-        position: "top-right", 
-        autoClose: 1000, 
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true, 
-        draggable: true, 
-        progress: undefined, 
-        
-      });   
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-
-    } catch (errr) {
-      toast.error('Something went wrong');
-
-      console.error(errr);
-    }
   };
 
   const handleClick = (event, name) => {
@@ -220,9 +134,18 @@ export default function PatientPage() {
     filterName,
   });
 
-  const handleProfile = (event,patientId) => {
-    navigate(`/patientprofile?patientId=${patientId}`);
+  const handleLabFormRedirect = (event,patientId) => {
+   
+    navigate(`/labreport?patientId=${patientId}`);
+  };
+
+  const handleTriageFormRedirect = (event,patientId) => {
+    navigate(`/triage?patientId=${patientId}`);
     
+  };
+  const handleGenerateReport = (event, patientId) => {
+   
+    toast.success(`Generating report for Patient ID: ${patientId}`);
   };
   
 
@@ -230,40 +153,6 @@ export default function PatientPage() {
 
   return (    
     <Container>
-<Modal open={modalOpen} onClose={closeModal}>
-  <div className="modal-content">
-    <Typography variant="h6">Patient ID: {selectedPatientId}</Typography>
-   
-    <FormControl variant="outlined" fullWidth>
-      <InputLabel id="action">Action</InputLabel>
-      <Select
-        id="action"
-        name="action"
-        labelId="action-label"
-        label="Action"
-        value={selectedAction}
-        onChange={handleActionSelect}
-        required
-      >
-        <MenuItem value="">
-          <em>Select</em>
-        </MenuItem>
-        <MenuItem value="Triage">Send to Triage</MenuItem>
-        <MenuItem value="Doctor">Send to Doctor</MenuItem>
-        <MenuItem value="Lab">Send to Lab</MenuItem>
-        <MenuItem value="Pharmacy">Send to Pharmacy</MenuItem>
-        <MenuItem value="Accounts">Send to Accounts</MenuItem>
-      </Select>
-    </FormControl>
-
-    <Button variant="contained" color="primary" onClick={sendAction}>
-      Save Action
-    </Button>
-    
-  </div>
-</Modal>
-
-
          {loading && (
       <div>
         
@@ -282,9 +171,7 @@ export default function PatientPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Patients</Typography>
 
-        <Button variant="contained" color="inherit"  onClick={() => navigate('/createPatient')}  startIcon={<Iconify icon="eva:plus-fill" />}>
-          New Patient
-        </Button>
+
       </Stack>
 
       <Card>
@@ -309,12 +196,10 @@ export default function PatientPage() {
                   { id: 'gender', label: 'Gender' },
                   { id: 'contacts', label: 'Contacts' },
                   { id: 'age', label: 'Age' },
-                  { id: 'insuranceDetails', label: 'InsuranceDetails' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
+                  { id: 'insuranceDetails', label: 'InsuranceDetails' },                 
                   { id: 'status', label: 'Status' },
-                  {id: ''},
                   { id: '' },
-                  {id:''},
+                  { id: '' },
                 ]}
               />
               <TableBody>
@@ -327,14 +212,18 @@ export default function PatientPage() {
                       gender={row.gender}
                       contacts={row.contacts}
                       insuranceDetails={row.insuranceDetails}
-                      age={row.age}
-                      isVerified={row.isVerified}
+                      age={row.age}                     
                       status={row.status}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
-                      handleModal={(event) => handleModal(event, row.patientId)}
-                      handleDelete={(event) => handleDelete(event, row.patientId)}
-                      handleProfile={(event) => handleProfile(event, row.patientId) }
+                      handleRedirection={(event) => {
+                        if (row.status === 'Lab') {
+                          handleLabFormRedirect(event,row.patientId);
+                        } else if (row.status === 'Triage') {
+                          handleTriageFormRedirect(event,row.patientId);
+                        }                        
+                      }}
+                      handleGenerateReport={(event) => handleGenerateReport(event, row.patientId)}
                     />
                   ))}
 
