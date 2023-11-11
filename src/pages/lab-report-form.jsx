@@ -1,126 +1,151 @@
-import { useState } from 'react';
+// Import React and React Hook Form
+import React from "react";
+import { useForm } from "react-hook-form";
+import { useParams,useLocation } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import {toast ,ToastContainer} from 'react-toastify';
+import { useRouter } from 'src/routes/hooks';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Chip from '@mui/material/Chip';
 import { emphasize, styled } from '@mui/material/styles';
-import {toast ,ToastContainer} from 'react-toastify';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import { useRouter } from 'src/routes/hooks';
-import{Button,InputLabel,MenuItem,
-    FormControl,    
-    
-    Select,   
-    Container, 
-  TableCell,
-  TableRow,
-  TableContainer,
-  Table,
-  TableBody,
-  Box,
-  CircularProgress,
+
+// Import Material UI components
+import {
+  FormControl,
   FormControlLabel,
-    TextField} from '@mui/material';
-import { Label } from '@mui/icons-material';
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  Checkbox,
+  FormGroup,
+  Slider,
+  Button,
+  Box,
+} from "@mui/material";
+
+// Import axios for making HTTP requests
+import axios from "axios";
+
+// Define the test types
+const testTypes = [
+  "stool",
+  "blood",
+  "urine",
+  "swab",
+  "tissues",
+  "fluids",
+  "sputum",
+  "cytology",
+  "other",
+];
+
+// Define the slider marks
+const marks = [
+  {
+    value: 0,
+    label: "0",
+  },
+  {
+    value: 25,
+    label: "25",
+  },
+  {
+    value: 50,
+    label: "50",
+  },
+  {
+    value: 75,
+    label: "75",
+  },
+  {
+    value: 100,
+    label: "100",
+  },
+];
 
 
-// ----------------------------------------------------------------------
+export default function LabReportPage()  {
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const location = useLocation();
 
-export default function LabReportPage() {
-    const [formData, setFormData] = useState({
-        name: '',
-        category: '',
-        quantity: '',
-        unitPrice: '',
-        supplierInformation: ''
-      });
-      const router = useRouter();
-      const [loading, setLoading] = useState(false);
-
-      const handleSubmit = (event) => {
-        // Prevent the default browser behavior
-        event.preventDefault();
-        setLoading(true);
-      
-        // Define the endpoint URL
-        const url = 'http://localhost:8080/api/v1/pharmacies';
-      
-        // Make a POST request with axios
-        axios.post(url, formData)
-          .then(response => {
-            
-            setLoading(false);
-            
-          
-            toast.success("Item added successfully", {
-              position: "top-right", 
-              autoClose: 1000, 
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true, 
-              draggable: true, 
-              progress: undefined, 
-              onClose: () => router.push('/pharmacy')
-            });
-                       
-
-            console.log(response.data);
-           
-          })
-          .catch(error => {
-            toast.error('Something went wrong');
-           
-            console.error(error);
-            
-          });
-      };
-
-      
-const labelStyle = {
-  backgroundColor: '#f8d591', 
-  padding: '10px', 
-  width: '150px', 
-  textAlign: 'right' 
-};
-      
- const handleChange = (event) => {     
-     const { name, value } = event.target;      
-     setFormData({
-       ...formData, 
-       [name]: value 
-     });
- };
-
- const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-  const backgroundColor =
-    theme.palette.mode === 'light'
-      ? theme.palette.grey[100]
-      : theme.palette.grey[800];
-  return {
-    backgroundColor,
-    height: theme.spacing(3),
-    color: theme.palette.text.primary,
-    fontWeight: theme.typography.fontWeightRegular,
-    '&:hover, &:focus': {
-      backgroundColor: emphasize(backgroundColor, 0.06),
-    },
-    '&:active': {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(backgroundColor, 0.12),
-    },
-  };
-});
+  const patientId = new URLSearchParams(location.search).get('patientId');
  
+  const onSubmit = (data) => {
+    
+    data.testTypes = data.testTypes.join(",");
+
+    data.observation = `${data.observation}%`;
+
+    console.log(data);
+
+    axios
+      .put(
+        `http://localhost:8080/api/v1/patients/${patientId}`,
+        data
+      )
+      .then((response) => {
+       
+        console.log(response);
+
+        toast.success(`Lab details for patient ${patientId} have been sent to the doctor`, {
+          position: "top-right", 
+          autoClose: 1000, 
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true, 
+          draggable: true, 
+          progress: undefined, 
+          onClose: () => router.push('/labs')
+        });
+                
+      })
+      .catch((error) => {
+       
+        console.error(error);
+         toast.error('Something went wrong');
+      });
+  };
+
+  const StyledBreadcrumb = styled(Chip)(({ theme }) => {
+    const backgroundColor =
+      theme.palette.mode === 'light'
+        ? theme.palette.grey[100]
+        : theme.palette.grey[800];
+    return {
+      backgroundColor,
+      height: theme.spacing(3),
+      color: theme.palette.text.primary,
+      fontWeight: theme.typography.fontWeightRegular,
+      '&:hover, &:focus': {
+        backgroundColor: emphasize(backgroundColor, 0.06),
+      },
+      '&:active': {
+        boxShadow: theme.shadows[1],
+        backgroundColor: emphasize(backgroundColor, 0.12),
+      },
+    };
+  });
   return (
-    <>
     <Box
-    component="main"
-    sx={{
-      flexGrow: 1,
-      py: 8
-    }}
-  >
-     <Container maxWidth="xl">
-     <Breadcrumbs sx={{marginBottom:'50px', marginLeft:'100px', width:'100%'}} aria-label="breadcrumb">
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "60%",
+        margin: "auto",
+      }}
+    >
+
+<Breadcrumbs sx={{marginBottom:'50px', marginLeft:'100px', width:'100%'}} aria-label="breadcrumb">
         <StyledBreadcrumb
         
           component="a"
@@ -128,141 +153,114 @@ const labelStyle = {
           label="Home"
        
         />
-        <StyledBreadcrumb component="a" href="/labs" label="Test Requests" />
+        <StyledBreadcrumb component="a" href="/labs" label="labs" />
         <StyledBreadcrumb
-          label="Lab Report Form"
+          label="Fill Lab Report"
          
         />
       </Breadcrumbs>
-    <div>
-    <form onSubmit={handleSubmit}>
-    <TableContainer>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell style={labelStyle}>
-                  <Label htmlFor="name">Item Name</Label>
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    id="name"
-                    name="name"  
-                    label="name"          
-                    type="text"
-                    value={formData.name}
-                    onChange={handleChange}
-                    variant="outlined"
-                    fullWidth
-                    required
-                    
-                    />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell style={labelStyle}>
-                  <Label htmlFor="category">Category</Label>
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    id="category"
-                    name="category"  
-                    label="category"          
-                    type="text"
-                    value={formData.category}
-                    onChange={handleChange}
-                    variant="outlined"
-                    fullWidth
-                    required
-                    
-                    />
-                </TableCell>
-              </TableRow>
-          <TableRow>
-            <TableCell style={labelStyle}>
-              <Label htmlFor="quantity">Quantity</Label>
-            </TableCell>
-              <TableCell>
-                <TextField
-                  id="quantity"
-                  name="quantity"
-                  label="Quantity"
-                  type="number"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  variant="outlined"
-                  fullWidth
-                  required
-                />
-              </TableCell>
-          </TableRow>
-      
-              <TableRow>
-                <TableCell style={labelStyle}>
-                  <Label htmlFor="unitPrice">Unit Price</Label>
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    id="unitPrice"
-                    name="unitPrice"
-                    label="Unit Price"
-                    type="number"
-                    value={formData.unitPrice}
-                    onChange={handleChange}
-                    variant="outlined"
-                    fullWidth
-                    required
-                  />
-               </TableCell>
-            </TableRow>
-               <TableRow>
-                <TableCell style={labelStyle}>
-                <Label htmlFor="supplierInformation">Supplier Information:</Label>
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    id="supplierInformation"
-                    name="supplierInformation"
-                    label="Supplier Information"
-                    type="text"
-                    value={formData.insuranceDetails}
-                    onChange={handleChange}
-                    variant="outlined"
-                    fullWidth
-                    required
-                  />
-                </TableCell>
-              </TableRow>           
-            </TableBody>
-          </Table>
-        </TableContainer>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"                
-                disabled={loading}
-                fullWidth
-                sx={{ 
-                  height: 48,
-                  '@media (min-width: 600px)': {
-                    width: '50%',
-                    marginLeft: '25%',
-                    marginRight: '25%'
-                  }
-                }}
-              >
-                {loading ? (
-              <CircularProgress size={24} color="inherit" /> 
-            ) : (
-              ' Add Item'
-            )}
-           
-          </Button>         
+
+      <h1>Lab Data Form</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormControl sx={{ width: "100%" }} required>
+          <InputLabel id="sample-details-label">Sample Details</InputLabel>
+          <Select
+            labelId="sample-details-label"
+            id="sample-details"
+            {...register("sampleDetails", { required: true })}
+          >
+            <MenuItem value="normal">Normal</MenuItem>
+            <MenuItem value="urgent">Urgent</MenuItem>
+          </Select>
+        </FormControl>
+        <TextField
+          id="date-sample-taken"
+          label="Date Sample Taken"
+          type="date"
+          sx={{ width: "100%", marginTop:'20px' }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          {...register("dateSampleTaken", { required: true })}
+        />
+        <FormControl component="fieldset" sx={{ width: "100%", marginTop:'20px' }} required>
+          <FormLabel component="legend">sample Type: Fasting or Non Fasting</FormLabel>
+          <RadioGroup
+            aria-label="sample-type"
+            name="sampleType"
+            {...register("sampleType", { required: true })}
+          >
+            <FormControlLabel
+              value="fasting"
+              control={<Radio />}
+              label="Fasting"
+            />
+            <FormControlLabel
+              value="non-fasting"
+              control={<Radio />}
+              label="Non Fasting"
+            />
+          </RadioGroup>
+        </FormControl>
+            <FormControl sx={{ width: "100%",marginTop:'20px' }} required>
+            <InputLabel id="test-type-label">Test Type</InputLabel>
+            <Select
+                labelId="test-type-label"
+                id="test-type"
+                multiple
+                defaultValue={[]}
+                {...register("testTypes", { required: true })}
+                          >
+              {testTypes.map((testType) => (
+                <MenuItem key={testType} value={testType}>
+                  {testType}
+                </MenuItem>
+              ))}
+            </Select>
+
+        </FormControl>
+        <TextField
+          id="additional-tests"
+          label="Additional Tests"
+          multiline
+          rows={4}
+          sx={{ width: "100%",marginTop:'20px' }}
+          {...register("additionalTests")}
+        />
+        <TextField
+          id="clinical-information"
+          label="Clinical Information"
+          multiline
+          rows={4}
+          sx={{ width: "100%",marginTop:'20px' }}
+          {...register("clinicalInformation")}
+        />
+        <FormControl sx={{ width: "100%",marginTop:'20px' }}>
+          <FormLabel component="legend">Observation</FormLabel>
+          <Slider
+            aria-label="observations"
+            defaultValue={50}
+            step={1}
+            marks={marks}
+            valueLabelDisplay="auto"
+            {...register("observations")}
+          />
+        </FormControl>
+        <TextField
+          id="conclusion"
+          label="Conclusion"
+          multiline
+          rows={4}
+          sx={{ width: "100%" ,marginTop:'20px'}}
+          {...register("conclusion")}
+        />
+        <Button type="submit" variant="contained" sx={{ width: "100%",marginTop:'20px' }}>
+          Submit
+        </Button>
       </form>
       <ToastContainer />
-    </div>
-  </Container>
-</Box>
-</>
-);
-};
+    </Box>
+  );
+}
+
 

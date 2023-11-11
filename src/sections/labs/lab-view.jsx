@@ -145,7 +145,7 @@ export default function LabPage() {
   };
   const handleGenerateReport = (event, patientId) => {
    
-    toast.success(`Generating report for Patient ID: ${patientId}`);
+    navigate(`/report?patientId=${patientId}`);
   };
   
 

@@ -19,6 +19,7 @@ export const CreateNewBranchPage = lazy(() => import('src/pages/create-hospital-
 export const TriagePage = lazy(() => import('src/pages/triage-form'));
 export const PatientProfilePage = lazy(() => import('src/pages/patient-info'));
 export const LabReportPage = lazy(() => import('src/pages/lab-report-form'));
+export const ReportPage = lazy(() => import('src/pages/lab-report'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -48,6 +49,7 @@ export default function Router() {
         { path: 'createBranch', element: <CreateNewBranchPage /> },
         { path: 'patientprofile', element: <PatientProfilePage /> },
         { path: 'labreport', element: <LabReportPage /> },
+        { path: 'report', element: <ReportPage /> },
         { path: 'triage', element: <TriagePage /> },
        
       ],
