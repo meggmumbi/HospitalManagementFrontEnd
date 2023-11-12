@@ -1,221 +1,206 @@
 import React, { useState, useEffect } from "react";
-import { Button, Container, Paper, Typography, Grid, Box, TableBody,Table,TableCell,TableRow,TableHead,TableContainer } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import PropTypes from "prop-types";
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Chip from '@mui/material/Chip';
-import { emphasize, styled } from '@mui/material/styles';
+import axios from "axios";
+import 'src/modal.css';
+import { Button, Container} from "@mui/material";
 
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(2),
-    margin: theme.spacing(2),
-  },
-  title: {
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontWeight: "normal",
-    textAlign: "center",
-  },
-  data: {
-    fontWeight: "normal",
-    textAlign: "left",
-  },
-  export: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: theme.spacing(2),
-  },
-}));
-
-// Define custom styles for the PDF document
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: "column",
-    backgroundColor: "#FFFFFF",
-  },
-  section: {
-    margin: 10,
-    padding: 10,
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    fontWeight: "normal",
-    textAlign: "center",
-  },
-  data: {
-    fontSize: 12,
-    fontWeight: "normal",
-    textAlign: "left",
-  },
-});
 
 
-const MyDocument = ({ data }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.section}>
-       
-        <Text style={styles.title}>Lab Report</Text>
-       
-        <Text style={styles.subtitle}>Date: {data.dateSampleTaken}</Text>
-        <Text style={styles.subtitle}>Sample Type: {data.sampleType}</Text>
-        <Text style={styles.subtitle}>Test Types: {data.testTypes}</Text>
-        <Text style={styles.subtitle}>Additional Tests: {data.additionalTests}</Text>
-        <Text style={styles.data}>Clinical Information: {data.clinicalInformation}</Text>
-        <Text style={styles.data}>Conclusion: {data.conclusion}</Text>
-        <Text style={styles.data}>Observations: {data.observations}</Text>
-      </View>
-    </Page>
-  </Document>
-);
-
-const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-    const backgroundColor =
-      theme.palette.mode === 'light'
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800];
-    return {
-      backgroundColor,
-      height: theme.spacing(3),
-      color: theme.palette.text.primary,
-      fontWeight: theme.typography.fontWeightRegular,
-      '&:hover, &:focus': {
-        backgroundColor: emphasize(backgroundColor, 0.06),
-      },
-      '&:active': {
-        boxShadow: theme.shadows[1],
-        backgroundColor: emphasize(backgroundColor, 0.12),
-      },
-    };
-  });
-
-export default function ReportPage () {
-  
-  const classes = useStyles();
+const LabReport = () => {
   const location = useLocation();
   const patientId = new URLSearchParams(location.search).get('patientId');
- 
-  const [data, setData] = useState(null);
 
- 
+  const [age, setAge] = useState();
+  const [name, setName] = useState("");
+  const [gender, setGender] = useState("");
+  const [allergies, setAllergies] = useState("");
+  const [weight, setWeight] = useState();
+  const [height, setHeight] = useState();
+  const [systolic, setSystolic] = useState();
+  const [diastolic, setDiastolic] = useState();
+  const [medicalHistorySummery, setMedicalHistorySummery] = useState("");
+  const [observations, setObservations] = useState("");
+  const [diagnosis, setDiagnosis] = useState();
+  const [sampleDetails, setSampleDetails] = useState("");
+  const [dateSampleTaken, setDateSampleTaken] = useState(
+    ""
+  );
+  const [sampleType, setSampleType] = useState("");
+  const [testTypes, setTestTypes] = useState("");
+  const [additionalTests, setAdditionalTests] = useState("");
+  const [clinicalInformation, setClinicalInformation] = useState("");
+  const [conclusion, setConclusion] = useState("");
   const [loading, setLoading] = useState(false);
 
-  
-  const [error, setError] = useState(null);
-
+  // Fetch the patient details from the endpoint using axios
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/api/v1/patients/${patientId}`);
-        setData(response.data);
-      } catch (errors) {
-        console.error('Error fetching patient details:', errors);
-      }
+    axios
+      .get(`http://localhost:8080/api/v1/patients/${patientId}`)
+      .then((response) => {
+        // Update the state variables with the response data
+       
+        setAge(response.data.age);
+        setName(response.data.name);
+        setGender(response.data.gender);
+        setAllergies(response.data.allergies);
+        setWeight(response.data.weight);
+        setHeight(response.data.height);
+        setSystolic(response.data.systolic);
+        setDiastolic(response.data.diastolic);
+        setMedicalHistorySummery(response.data.medicalHistorySummery);
+        setObservations(response.data.observations);
+        setDiagnosis(response.data.diagnosis);
+        setSampleDetails(response.data.sampleDetails);
+        setDateSampleTaken(response.data.dateSampleTaken);
+        setSampleType(response.data.sampleType);
+        setTestTypes(response.data.testTypes);
+        setAdditionalTests(response.data.additionalTests);
+        setClinicalInformation(response.data.clinicalInformation);
+        setConclusion(response.data.conclusion);
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error);
+      });
+  }, [patientId]); 
+
+ 
+  const downloadReport = () => {
+    setLoading(true);
+
+    const data = {
+      source: document.getElementById("report").innerHTML,
+      landscape: false,
+      use_print: false,
     };
 
-    fetchData();
-  }, [patientId]);
- 
+      // Use async/await for better readability
+      const convertToPDF = async () => {
+        try {
+          console.log("Request Data:", data);
+          const response =             
+          fetch('https://api.pdfshift.io/v3/convert/pdf', {
+            method: 'POST',
+              headers: {
+                "Content-Type": "application/json",
+                Authorization:  `Basic ${btoa('api:sk_84449f240f06519072a7ade1a480af1c22f01a41')}`,
+              },            
+            body: JSON.stringify({
+               data
+            }),
+              responseType: "arraybuffer",
+            }
+          );
+    
+        const blob = new Blob([response.data], {
+          type: "application/pdf",
+        });
+
+           const link = document.createElement("a");
+           link.href = window.URL.createObjectURL(blob);
+           link.download = "report.pdf";
+
+            // Append the link to the document and click it
+        document.body.appendChild(link);
+        link.click();
+
+    // Remove the link from the document
+    link.remove();
+  } catch (error) {
+    // Handle the error
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+convertToPDF();
+};
+  
   return (
-    <Container maxWidth="xl">
-         <Breadcrumbs sx={{marginBottom:'50px', marginLeft:'100px', width:'100%'}} aria-label="breadcrumb">
-        <StyledBreadcrumb
-        
-          component="a"
-          href="/dashboard"
-          label="Home"
-       
-        />
-        <StyledBreadcrumb component="a" href="/labs" label="Labs" />
-        <StyledBreadcrumb
-          label="Report"
-         
-        />
-      </Breadcrumbs>
-      <Paper elevation={3}
-  sx={{
-    backgroundColor: "#f0f0f0",
-    borderRadius: 2,
-    margin: 4,
-  }} >
-        {loading && <Typography variant="h6">Loading...</Typography>}
-        {error && <Typography variant="h6" color="error">{error}</Typography>}
-        {data && (
-          <>
-          <TableContainer component={Paper}>
-  <Table>
-    <TableHead>
-      <TableRow>
-        <TableCell>Label</TableCell>
-        <TableCell>Value</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      <TableRow>
-        <TableCell>Sample Type</TableCell>
-        <TableCell>{data.sampleType}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Test Types</TableCell>
-        <TableCell>{data.testTypes}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Additional Tests</TableCell>
-        <TableCell>{data.additionalTests}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Clinical Information</TableCell>
-        <TableCell>{data.clinicalInformation}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Conclusion</TableCell>
-        <TableCell>{data.conclusion}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Observations</TableCell>
-        <TableCell>{data.observations}</TableCell>
-      </TableRow>
-    </TableBody>
-  </Table>
-</TableContainer>
-            <Box className={classes.export}>
-              <PDFDownloadLink document={<MyDocument data={data} />} fileName="lab-report.pdf">
-                {({ blob,   err }) =>
-                  loading ? "Loading document..." : <Button variant="contained" color="primary">Download PDF</Button>
-                }
-              </PDFDownloadLink>
-            </Box>
-          </>
-        )}
-      </Paper>
-    </Container>
+    <div id="report" className="lab-report">
+      <h1 className="header">Lab Report</h1>
+      <div className="separator">-</div>
+      <h2>Patient Details</h2>
+      <table className="details">
+        <tr>
+          <td>Patient ID</td>
+          <td>{patientId}</td>
+        </tr>
+        <tr>
+          <td>Age</td>
+          <td>{age}</td>
+        </tr>
+        <tr>
+          <td>Name</td>
+          <td>{name}</td>
+        </tr>
+        <tr>
+          <td>Gender</td>
+          <td>{gender}</td>
+        </tr>
+        <tr>
+          <td>Allergies</td>
+          <td>{allergies || "None"}</td>
+        </tr>
+        <tr>
+          <td>Weight</td>
+          <td>{weight} kg</td>
+        </tr>
+        <tr>
+          <td>Height</td>
+          <td>{height} m</td>
+        </tr>
+        <tr>
+          <td>Blood Pressure</td>
+          <td>
+            {systolic}/{diastolic} mmHg
+          </td>
+        </tr>
+        <tr>
+          <td>Medical History Summery</td>
+          <td>{medicalHistorySummery || "None"}</td>
+        </tr>
+      </table>
+      <h2>Observations</h2>
+      <p className="details">{observations}</p>
+      <h2>Diagnosis</h2>
+      <p className="details">{diagnosis || "None"}</p>
+      <h2>Sample Details</h2>
+      <table className="details">
+        <tr>
+          <td>Urgency</td>
+          <td>{sampleDetails}</td>
+        </tr>
+        <tr>
+          <td>Date Sample Taken</td>
+          <td>{dateSampleTaken}</td>
+        </tr>
+        <tr>
+          <td>Sample Type</td>
+          <td>{sampleType}</td>
+        </tr>
+        <tr>
+          <td>Test Types</td>
+          <td>{testTypes}</td>
+        </tr>
+        <tr>
+          <td>Additional Tests</td>
+          <td>{additionalTests}</td>
+        </tr>
+        <tr>
+          <td>Clinical Information</td>
+          <td>{clinicalInformation}</td>
+        </tr>
+      </table>
+      <h2>Conclusion</h2>
+      <p className="details">{conclusion}</p>
+      <Button className="download-button" onClick={downloadReport}>
+        Download Report
+      </Button>
+    </div>
   );
 };
 
-MyDocument.propTypes = {
-    data: PropTypes.shape({
-      additionalTests: PropTypes.string.isRequired,
-      clinicalInformation: PropTypes.string.isRequired,
-      conclusion: PropTypes.string.isRequired,
-      observations: PropTypes.string.isRequired,
-      dateSampleTaken: PropTypes.string,
-      testTypes: PropTypes.string,
-      sampleType: PropTypes.string,
-      
-    }).isRequired,
-  };
-
+export default LabReport;
