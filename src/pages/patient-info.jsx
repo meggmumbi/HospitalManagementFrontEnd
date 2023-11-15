@@ -1,37 +1,31 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Box, Button, Card, CardContent, CardHeader, Grid, TextField, Typography } from "@mui/material";
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import Chip from '@mui/material/Chip';
+import { emphasize, styled } from '@mui/material/styles';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 
 const PatientProfile = () => {
-  // The patient details are stored in a state variable
-  const [patient, setPatient] = useState({
-    patientId: 24,
-    age: 90,
-    name: "Erin Aron",
-    gender: "female",
-    allergies: null,
-    contacts: "0876543211",
-    weight: 2,
-    height: 2,
-    systolic: 2,
-    diastolic: 2,
-    medicalHistorySummery: null,
-    observations: "39",
-    status: "Lab",
-    date: "2023-11-11T00:00:00.000+00:00",
-    address: null,
-    diagnosis: null,
-    assignedDoctor: "Doctor 3",
-    insuranceDetails: "cic",
-    medicalHistory: null,
-    sampleDetails: "urgent",
-    dateSampleTaken: "2023-11-11T00:00:00.000+00:00",
-    sampleType: "fasting",
-    testTypes: "swab,tissues,fluids",
-    additionalTests: "test",
-    clinicalInformation: "test",
-    conclusion: "test"
+ 
+  const [patient, setPatient] = useState({    
+    age: '',
+    name: '',
+    gender:'',
+    allergies: '',
+    contacts: '',
+    weight: '',
+    height: '',   
+    medicalHistorySummery: '',    
+    status: '',
+    dateSampleTaken: '',
+    address: '',
+    diagnosis: '',
+    insuranceDetails: '',
+   
   });
-
+  const location = useLocation();
+  const patientId = new URLSearchParams(location.search).get('patientId');
   // The image file is stored in a state variable
   const [image, setImage] = useState(null);
 
@@ -42,6 +36,19 @@ const PatientProfile = () => {
     // Set the image state to the file
     setImage(file);
   };
+
+    // Fetch the patient details from the endpoint using axios
+    useEffect(() => {
+      axios
+        .get(`http://localhost:8080/api/v1/patients/${patientId}`)
+        .then((response) => {
+        setPatient(response.data);
+        })
+        .catch((error) => {
+          // Handle the error
+          console.error(error);
+        });
+    }, [patientId]); 
 
   // A function to handle the form submission
   const handleSubmit = (event) => {
@@ -134,7 +141,7 @@ const PatientProfile = () => {
               fullWidth
             />
           </Grid>
-          {/* A grid item for the patient gender */}
+         
           <Grid item xs={6}>
             <TextField
               label="Gender"
@@ -143,12 +150,28 @@ const PatientProfile = () => {
               fullWidth
             />
           </Grid>
-          {/* A grid item for the patient address */}
+        
           <Grid item xs={6}>
             <TextField
               label="Address"
               value={patient.address}
               onChange={(event) => setPatient({ ...patient, address: event.target.value })}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              label="Insurance Details"
+              value={patient.insuranceDetails}
+              onChange={(event) => setPatient({ ...patient, insuranceDetails: event.target.value })}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              label="Allergies"
+              value={patient.allergies}
+              onChange={(event) => setPatient({ ...patient, allergies: event.target.value })}
               fullWidth
             />
           </Grid>
@@ -177,8 +200,8 @@ const PatientProfile = () => {
         </Typography>
         {/* A text field for the patient last visit date */}
         <TextField
-          value={patient.date}
-          onChange={(event) => setPatient({ ...patient, date: event.target.value })}
+          value={patient.dateSampleTaken}
+          onChange={(event) => setPatient({ ...patient, dateSampleTaken: event.target.value })}
           fullWidth
         />
       </Box>
@@ -196,30 +219,65 @@ const PatientProfile = () => {
     );
   };
 
-  // The main return statement of the component
+  const StyledBreadcrumb = styled(Chip)(({ theme }) => {
+    const backgroundColor =
+      theme.palette.mode === 'light'
+        ? theme.palette.grey[100]
+        : theme.palette.grey[800];
+    return {
+      backgroundColor,
+      height: theme.spacing(3),
+      color: theme.palette.text.primary,
+      fontWeight: theme.typography.fontWeightRegular,
+      '&:hover, &:focus': {
+        backgroundColor: emphasize(backgroundColor, 0.06),
+      },
+      '&:active': {
+        boxShadow: theme.shadows[1],
+        backgroundColor: emphasize(backgroundColor, 0.12),
+      },
+    };
+  });
+
   return (
-    // A card component to wrap the whole page
-    <Card>
-      {/* A card header component for the page title */}
+
+    
+   
+    <Card>   
+       <Breadcrumbs sx={{marginBottom:'50px', marginLeft:'100px', width:'100%'}} aria-label="breadcrumb">
+        <StyledBreadcrumb
+        
+          component="a"
+          href="/dashboard"
+          label="Home"
+       
+        />
+        <StyledBreadcrumb component="a" href="/patients" label="Patients" />
+        <StyledBreadcrumb
+          label="New Patient"
+         
+        />
+      </Breadcrumbs>
+        
       <CardHeader title="Patient profile" sx={{ bgcolor: "primary.main", color: "white" }} />
-      {/* A card content component for the page content */}
+     
       <CardContent>
-        {/* A grid container to layout the photo, details, and status sections */}
+      
         <Grid container spacing={2}>
-          {/* A grid item for the photo section */}
+         
           <Grid item xs={12} md={4}>
             {renderPhotoSection()}
           </Grid>
-          {/* A grid item for the details section */}
+         
           <Grid item xs={12} md={4}>
             {renderDetailsSection()}
           </Grid>
-          {/* A grid item for the status section */}
+          
           <Grid item xs={12} md={4}>
             {renderStatusSection()}
           </Grid>
         </Grid>
-        {/* The save changes button */}
+       
         {renderSaveButton()}
       </CardContent>
     </Card>

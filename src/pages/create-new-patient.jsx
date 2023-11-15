@@ -31,7 +31,10 @@ export default function CreateNewPatientPage() {
         age: '',
         gender: '',
         contacts: '',
-        insuranceDetails: ''
+        insuranceDetails: '',
+        address: '',
+        registrationDate: ''
+        
       });
       const router = useRouter();
       const [loading, setLoading] = useState(false);
@@ -178,18 +181,16 @@ const labelStyle = {
           </TableRow>
           <TableRow>
                 <TableCell style={labelStyle}>
-                  <Label htmlFor="dob">Date of Birth:</Label>
+                  <Label htmlFor="registrationDate">Date of Birth:</Label>
                 </TableCell>
                 <TableCell>
-                  <TextField
-                    
+                  <TextField                    
                     type="date"
                     variant="filled"
                     fullWidth
-                    name="dob"
-                    
-                    
-                    
+                    name="registrationDate"
+                    value={formData.registrationDate}
+                    onChange={handleChange}
                   />
                 </TableCell>
               </TableRow>
@@ -249,7 +250,9 @@ const labelStyle = {
                     id="address"
                     name="address"
                     label="address"
-                    type="text"            
+                    type="text"  
+                    value={formData.address}
+                    onChange={handleChange}          
                     fullWidth
                     
                   />
