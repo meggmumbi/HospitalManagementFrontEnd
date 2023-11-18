@@ -188,7 +188,7 @@ export default function HospitalPage() {
               </Typography>
               <Button
                 component={Link}
-                to="/inventory"
+                to="/records"
                 variant="contained"
                 color="primary"
                 style={{ marginTop: '16px' }}

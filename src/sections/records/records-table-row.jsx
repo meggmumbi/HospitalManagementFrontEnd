@@ -84,7 +84,7 @@ export default function RecordsTableRow({
 
         <TableCell onClick={handleRedirection} align="right">
           <IconButton> 
-            <Iconify icon="eva:info-fill" />
+            <Iconify icon="eva:plus-circle-fill" />
           </IconButton>
         </TableCell>
     

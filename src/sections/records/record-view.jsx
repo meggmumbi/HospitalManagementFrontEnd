@@ -66,7 +66,7 @@ export default function RecordPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/patients/getByStatus');
+        const response = await axios.get('http://localhost:8080/api/v1/patients/getByPharmacyStatus');
         setPatients(response.data); 
         setLoading(false);
       } catch (err) {
@@ -134,19 +134,12 @@ export default function RecordPage() {
     filterName,
   });
 
-  const handleLabFormRedirect = (event,patientId) => {
+  const handleFormRedirect = (event,patientId) => {
    
-    navigate(`/labreport?patientId=${patientId}`);
+    navigate(`/pharmacyDispence?patientId=${patientId}`);
   };
 
-  const handleTriageFormRedirect = (event,patientId) => {
-    navigate(`/triage?patientId=${patientId}`);
-    
-  };
-  const handleGenerateReport = (event, patientId) => {
-   
-    navigate(`/report?patientId=${patientId}`);
-  };
+
   
 
   const notFound = !dataFiltered.length && !!filterName;
@@ -216,14 +209,8 @@ export default function RecordPage() {
                       status={row.status}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
-                      handleRedirection={(event) => {
-                        if (row.status === 'Lab') {
-                          handleLabFormRedirect(event,row.patientId);
-                        } else if (row.status === 'Triage') {
-                          handleTriageFormRedirect(event,row.patientId);
-                        }                        
-                      }}
-                      handleGenerateReport={(event) => handleGenerateReport(event, row.patientId)}
+                      handleRedirection={(event) => handleFormRedirect(event, row.patientId)}
+                     
                     />
                   ))}
 
