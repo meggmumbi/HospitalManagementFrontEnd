@@ -50,6 +50,8 @@ export default function HospitalPage() {
 
   const [pharmacy, setPharmacy] = useState([]);
 
+  const [patients, setPatients] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState(null);
@@ -61,6 +63,21 @@ export default function HospitalPage() {
       try {
         const response = await axios.get('http://localhost:8080/api/v1/pharmacies');
         setPharmacy(response.data); 
+        setLoading(false);
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/patients/getByPharmacyStatus');
+        setPatients(response.data); 
         setLoading(false);
       } catch (err) {
         setError(err);
@@ -178,7 +195,7 @@ export default function HospitalPage() {
       </Box>
 
       <Stack spacing={0.5}>
-        <Typography variant="h4">{fShortenNumber(9)}</Typography>
+        <Typography variant="h4">{fShortenNumber(patients.length)}</Typography>
 
         <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
           Pharmacy Records
@@ -219,7 +236,7 @@ export default function HospitalPage() {
       </Box>
 
       <Stack spacing={0.5}>
-        <Typography variant="h4">{fShortenNumber(9)}</Typography>
+        <Typography variant="h4">{fShortenNumber(pharmacy.length)}</Typography>
 
         <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
           Pharmacy Items

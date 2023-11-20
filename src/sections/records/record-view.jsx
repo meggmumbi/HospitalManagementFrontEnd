@@ -4,10 +4,13 @@ import { useRouter } from 'src/routes/hooks';
 import 'react-toastify/dist/ReactToastify.css';
 import {toast ,ToastContainer} from 'react-toastify';
 
+
 import axios from 'axios';
 
 
 import 'src/modal.css';
+import Chip from '@mui/material/Chip';
+import { emphasize, styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -17,6 +20,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import { Select,Modal,MenuItem,FormControl,InputLabel } from '@mui/material';
 
 
@@ -29,6 +33,7 @@ import TableHead from '../user/user-table-head'
 import TableEmptyRows from '../user/table-empty-rows';
 import TableToolbar from '../user/user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../user/utils';
+
 
 
 
@@ -144,8 +149,44 @@ export default function RecordPage() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const StyledBreadcrumb = styled(Chip)(({ theme }) => {
+    const backgroundColor =
+      theme.palette.mode === 'light'
+        ? theme.palette.grey[100]
+        : theme.palette.grey[800];
+    return {
+      backgroundColor,
+      height: theme.spacing(3),
+      color: theme.palette.text.primary,
+      fontWeight: theme.typography.fontWeightRegular,
+      '&:hover, &:focus': {
+        backgroundColor: emphasize(backgroundColor, 0.06),
+      },
+      '&:active': {
+        boxShadow: theme.shadows[1],
+        backgroundColor: emphasize(backgroundColor, 0.12),
+      },
+    };
+  });
+
   return (    
     <Container>
+
+<Breadcrumbs sx={{marginBottom:'50px', marginLeft:'100px', width:'100%'}} aria-label="breadcrumb">
+        <StyledBreadcrumb
+        
+          component="a"
+          href="/dashboard"
+          label="Home"
+       
+        />
+        <StyledBreadcrumb component="a" href="/pharmacy" label="Main Pharmacy Page" />
+        <StyledBreadcrumb
+          label="Patients under Pharmacy Stage"
+         
+        />
+      </Breadcrumbs>
+
          {loading && (
       <div>
         
