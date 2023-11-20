@@ -1,9 +1,13 @@
 import { useState,useEffect } from 'react';
-import { useNavigate, Routes, Route,Link } from 'react-router-dom';
+import { useNavigate,useParams, Routes, Route } from 'react-router-dom';
+import { useRouter } from 'src/routes/hooks';
 import 'react-toastify/dist/ReactToastify.css';
 import {toast ,ToastContainer} from 'react-toastify';
+
 import axios from 'axios';
 
+
+import 'src/modal.css';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -13,15 +17,14 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import { Select,Modal,MenuItem,FormControl,InputLabel } from '@mui/material';
+
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { fShortenNumber } from 'src/utils/format-number';
 
 import TableNoData from '../user/table-no-data';
-import TableRow from './pharmacy-table-row';
+import TableRow from './labs-table-row';
 import TableHead from '../user/user-table-head'
 import TableEmptyRows from '../user/table-empty-rows';
 import TableToolbar from '../user/user-table-toolbar';
@@ -31,11 +34,9 @@ import { emptyRows, applyFilter, getComparator } from '../user/utils';
 
 
 
-
-
 // ----------------------------------------------------------------------
 
-export default function HospitalPage() {
+export default function LabPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -48,35 +49,24 @@ export default function HospitalPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [pharmacy, setPharmacy] = useState([]);
-
   const [patients, setPatients] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState(null);
 
+  
+  
+
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/v1/pharmacies');
-        setPharmacy(response.data); 
-        setLoading(false);
-      } catch (err) {
-        setError(err);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []); 
+  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/patients/getByPharmacyStatus');
+        const response = await axios.get('http://localhost:8080/api/v1/patients/getByStatus');
         setPatients(response.data); 
         setLoading(false);
       } catch (err) {
@@ -88,6 +78,7 @@ export default function HospitalPage() {
     fetchData();
   }, []); 
 
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -98,7 +89,7 @@ export default function HospitalPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = pharmacy.map((n) => n.name);
+      const newSelecteds = patients.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -137,128 +128,31 @@ export default function HospitalPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDelete = async (event, itemId) => {
-    console.log('handleDelete is being called');
-    try {      
-      const response = await axios.delete(`http://localhost:8080/api/v1/pharmacies/${itemId}`);
-     
-      console.log(response.data);
-      
-      toast.success("Item deleted successfully", {
-        position: "top-right", 
-        autoClose: 1000, 
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true, 
-        draggable: true, 
-        progress: undefined, 
-        
-      });      
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-
-    } catch (errr) {
-      toast.error('Something went wrong');
-
-      console.error(errr);
-    }
-  };
-
   const dataFiltered = applyFilter({
-    inputData: pharmacy,
+    inputData: patients,
     comparator: getComparator(order, orderBy),
     filterName,
   });
+
+  const handleLabFormRedirect = (event,patientId) => {
+   
+    navigate(`/labreport?patientId=${patientId}`);
+  };
+
+  const handleTriageFormRedirect = (event,patientId) => {
+    navigate(`/triage?patientId=${patientId}`);
+    
+  };
+  const handleGenerateReport = (event, patientId) => {
+   
+    navigate(`/report?patientId=${patientId}`);
+  };
+  
 
   const notFound = !dataFiltered.length && !!filterName;
 
   return (    
     <Container>
-      <Grid container spacing={3} sx={{marginBottom:"30px"}}>
-        <Grid xs={12} sm={6} md={6}>
-     <Card
-      component={Stack}
-      spacing={3}
-      direction="row"
-      sx={{
-        px: 3,
-        py: 5,
-        width: "95%",
-        borderRadius: 2,       
-      }}
-     
-    >
-       
-      <Box sx={{ width: 64, height: 64}}>
-       <img src='/assets/icons/glass/phamRecords.png'  alt='Inventory' />
-      </Box>
-
-      <Stack spacing={0.5}>
-        <Typography variant="h4">{fShortenNumber(patients.length)}</Typography>
-
-        <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-          Pharmacy Records
-        </Typography>
-        <Typography variant="h6" style={{ marginTop: '8px' }}>
-        Patient Record Management
-              </Typography>
-              <Button
-                component={Link}
-                to="/records"
-                variant="contained"
-                color="primary"
-                style={{ marginTop: '16px' }}
-              >
-                View Records
-              </Button>
-      </Stack>
-      </Card>
-      </Grid>
-      
-   
-
-      <Grid xs={12} sm={6} md={6}>
-      <Card
-      component={Stack}
-      spacing={3}
-      direction="row"
-      sx={{
-        px: 3,
-        py: 5,
-        width: "95%",
-        borderRadius: 2,       
-      }}
-     
-    >
-      <Box sx={{ width: 64, height: 64}}>
-       <img src='/assets/icons/glass/pharmacy.png'  alt='Inventory' />
-      </Box>
-
-      <Stack spacing={0.5}>
-        <Typography variant="h4">{fShortenNumber(pharmacy.length)}</Typography>
-
-        <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-          Pharmacy Items
-        </Typography>
-        <Typography variant="h6" style={{ marginTop: '8px' }}>
-                Inventory Management
-              </Typography>
-              <Button
-                component={Link}
-                to="/pharmacy"
-                variant="contained"
-                color="primary"
-                style={{ marginTop: '16px' }}
-              >
-                View Inventory
-              </Button>
-      </Stack>
-      
-      </Card>
-      </Grid>
-      </Grid>
-      
          {loading && (
       <div>
         
@@ -275,11 +169,9 @@ export default function HospitalPage() {
       <div>
         
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Pharmacy items</Typography>
+        <Typography variant="h4">Patients</Typography>
 
-        <Button variant="contained" color="inherit" onClick={() => navigate('/createItem')} startIcon={<Iconify icon="eva:plus-fill" />}>
-          New pharmacy item
-        </Button>
+
       </Stack>
 
       <Card>
@@ -295,16 +187,18 @@ export default function HospitalPage() {
               <TableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={pharmacy.length}
+                rowCount={patients.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'category', label: 'Category' },
-                  { id: 'quantity', label: 'Quantity' },
-                  { id: 'unitPrice', label: 'UnitPrice' },  
-                  { id: 'supplierInformation', label: 'SupplierInformation' },                
+                  { id: 'gender', label: 'Gender' },
+                  { id: 'contacts', label: 'Contacts' },
+                  { id: 'age', label: 'Age' },
+                  { id: 'insuranceDetails', label: 'InsuranceDetails' },                 
+                  { id: 'status', label: 'Status' },
+                  { id: '' },
                   { id: '' },
                 ]}
               />
@@ -313,22 +207,29 @@ export default function HospitalPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <TableRow
-                      key={row.itemId}
+                      key={row.patientId}
                       name={row.name}
-                      category={row.category}
-                      quantity={row.quantity}
-                      unitPrice={row.unitPrice}
-                      supplierInformation={row.supplierInformation}
-                     
+                      gender={row.gender}
+                      contacts={row.contacts}
+                      insuranceDetails={row.insuranceDetails}
+                      age={row.age}                     
+                      status={row.status}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
-                      handleDelete={(event) => handleDelete(event, row.itemId)}
+                      handleRedirection={(event) => {
+                        if (row.status === 'Lab') {
+                          handleLabFormRedirect(event,row.patientId);
+                        } else if (row.status === 'Triage') {
+                          handleTriageFormRedirect(event,row.patientId);
+                        }                        
+                      }}
+                      handleGenerateReport={(event) => handleGenerateReport(event, row.patientId)}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, pharmacy.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, patients.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -340,13 +241,14 @@ export default function HospitalPage() {
         <TablePagination
           page={page}
           component="div"
-          count={pharmacy.length}
+          count={patients.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
+     
       </div>
     )}
      <ToastContainer />

@@ -1,0 +1,82 @@
+/* Define a CSS class for the modal content */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    width: 40%; 
+    margin: 0 auto;
+    text-align: center;
+
+    
+    border: 2px solid blue;
+    padding: 20px;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+   
+  }
+  
+  /* Style the Typography component */
+  .modal-content h6 {
+    margin-bottom: 20px;
+  }
+  
+  /* Style the FormControl and Select components */
+  .modal-content .MuiFormControl-root {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  /* Style the Button component */
+  .modal-content .MuiButton-containedPrimary {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .modal-content {
+      width: 80%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .modal-content {
+      width: 100%;
+    }
+  }
+  
+  /* Additional styles as needed */
+  /* report.css */
+
+.header {
+  background-color: green;
+  color: white;
+  font-size: 24px;
+  padding: 10px;
+}
+
+.separator {
+  background-color: yellow;
+  height: 5px;
+}
+
+.details {
+  background-color: lightgreen;
+  padding: 10px;
+  width: 100%;
+}
+
+.download-button {
+  background-color: blue;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+.lab-report{
+  margin: auto;
+  width: 60%;
+  border: 3px solid #73AD21;
+  padding: 10px;
+}

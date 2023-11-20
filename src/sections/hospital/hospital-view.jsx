@@ -1,4 +1,7 @@
 import { useState,useEffect } from 'react';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import {toast ,ToastContainer} from 'react-toastify';
 import axios from 'axios';
 
 import Card from '@mui/material/Card';
@@ -41,6 +44,8 @@ export default function HospitalPage() {
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,6 +111,36 @@ export default function HospitalPage() {
     setFilterName(event.target.value);
   };
 
+  const handleDelete = async (event, hospitalId) => {
+   
+    try {      
+      const response = await axios.delete(`http://localhost:8080/api/v1/hospital/${hospitalId}`);
+     
+      console.log(response.data);
+      
+      toast.success("Branch deleted successfully", {
+        position: "top-right", 
+        autoClose: 1000, 
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true, 
+        draggable: true, 
+        progress: undefined, 
+        
+      });  
+        
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+      
+   
+    } catch (errr) {
+      toast.error('Something went wrong');
+
+      console.error(errr);
+    }
+  };
+
   const dataFiltered = applyFilter({
     inputData: hospital,
     comparator: getComparator(order, orderBy),
@@ -134,7 +169,7 @@ export default function HospitalPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Hospital Info</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button variant="contained" color="inherit" onClick={() => navigate('/createBranch')}  startIcon={<Iconify icon="eva:plus-fill" />}>
           New Hospital Branch
         </Button>
       </Stack>
@@ -178,6 +213,7 @@ export default function HospitalPage() {
                       facilities={row.facilities}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
+                      handleDelete={(event) => handleDelete(event, row.hospitalId)}
                     />
                   ))}
 
@@ -204,6 +240,7 @@ export default function HospitalPage() {
       </Card>
       </div>
     )}
+     <ToastContainer />
     </Container>
   );
 }

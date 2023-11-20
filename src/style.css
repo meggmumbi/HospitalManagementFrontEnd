@@ -1,0 +1,129 @@
+.container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+
+    
+  }
+  
+  h1 {
+    text-align: center;
+    color: white;
+  }
+  
+  .bg-primary {
+    background-color: #007bff;
+  }
+  
+  .p-3 {
+    padding: 1rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  label {
+    font-weight: bold;
+    width: 25%;
+    text-align: right;
+    margin-right: 1rem;
+  }
+  
+  input,
+  select,
+  textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+
+    
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+  }
+  
+  .button:hover {
+    background-color: #0069d9;
+  }
+  
+  .image {
+    width: 100%;
+    height: auto;
+    border-radius: 0.25rem;
+  }
+  .full-name {
+    font-size: 2rem;
+  }
+  
+  .id {
+    font-size: 1.5rem;
+  }
+  
+  .age,
+  .gender,
+  .phone,
+  .address,
+  .last-visit,
+  .status,
+  .assigned-doctor,
+  .insurance-details,
+  .diagnosis,
+  .sample-details,
+  .date-sample-taken,
+  .sample-type,
+  .test-types,
+  .additional-tests,
+  .clinical-information,
+  .conclusion {
+    font-size: 1rem;
+  }
+
+
+  
+  .form-control {
+    border-radius: 10px;
+    background-color: grey;
+  }
+  
+  .form-control:focus {
+    background-color: white;
+  }
+  
+  .form-group {
+    width: 100%;
+  }
+  
+  .form-group:nth-child(2),
+  .form-group:nth-child(3) {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .form-group:nth-child(2) .form-control,
+  .form-group:nth-child(3) .form-control {
+    width: 48%;
+  }
+  
+  .form-group:nth-child(4) .form-control {
+    height: 100px;
+  }
+  
+  .button {
+    background-color: blue;
+    color: white;
+    border-radius: 10px;
+  }
+  
+  
+    

@@ -45,7 +45,7 @@ const navConfig = [
   },
   {
     title: 'Labs',
-    path: '',
+    path: '/labs',
     icon: icon('ic_laboratory'),
   },
   {
