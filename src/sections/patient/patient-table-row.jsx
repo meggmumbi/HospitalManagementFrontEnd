@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -10,6 +11,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import { Select,Modal,Button } from '@mui/material';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -18,6 +20,7 @@ import Iconify from 'src/components/iconify';
 
 export default function PatientTableRow({
   selected,
+  patientId,
   name,
   avatarUrl,
   gender,
@@ -27,8 +30,15 @@ export default function PatientTableRow({
   isVerified,
   status,
   handleClick,
+  handleModal,
+  handleDelete,
+  handleProfile,
+
 }) {
   const [open, setOpen] = useState(null);
+
+  
+  
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -38,8 +48,18 @@ export default function PatientTableRow({
     setOpen(null);
   };
 
+  const colors = {
+    Lab: 'error',
+    Triage: 'warning',
+    Doctor: 'success',
+    Pharmacy: 'info',
+    Accounts: 'primary'
+  };
+  
+
   return (
     <>
+         
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
@@ -61,7 +81,19 @@ export default function PatientTableRow({
         <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
 
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+        <Label color={colors[status] || 'default'}>{status}</Label>
+        </TableCell>
+
+        <TableCell align="right">
+          <IconButton onClick={handleModal}> 
+            <Iconify icon="eva:edit-2-fill" />
+          </IconButton>
+        </TableCell>
+
+        <TableCell align="right">
+          <IconButton onClick={handleProfile}> 
+            <Iconify icon="eva:info-fill" />
+          </IconButton>
         </TableCell>
 
         <TableCell align="right">
@@ -86,8 +118,10 @@ export default function PatientTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>         
+          
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
+         
           Delete
         </MenuItem>
       </Popover>
@@ -97,13 +131,17 @@ export default function PatientTableRow({
 
 PatientTableRow.propTypes = {
   avatarUrl: PropTypes.any,
+  patientId: PropTypes.any,
   gender: PropTypes.any,
   handleClick: PropTypes.func,
+  handleModal: PropTypes.func,
+  handleDelete: PropTypes.func,
+  handleProfile:PropTypes.func,
   isVerified: PropTypes.any,
   name: PropTypes.any,
   age: PropTypes.any,
   contacts: PropTypes.any,
   insuranceDetails: PropTypes.any,
   selected: PropTypes.any,
-  status: PropTypes.string,
+  status: PropTypes.any,
 };

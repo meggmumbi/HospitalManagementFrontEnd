@@ -1,6 +1,12 @@
 import { useState,useEffect } from 'react';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import {toast ,ToastContainer} from 'react-toastify';
+
 import axios from 'axios';
 
+
+import 'src/modal.css';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -10,6 +16,8 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { Select,Modal,MenuItem,FormControl,InputLabel } from '@mui/material';
+
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -42,6 +50,21 @@ export default function PatientPage() {
 
   const [error, setError] = useState(null);
 
+
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [selectedAction, setSelectedAction] = useState('');
+
+  const [selectedPatientId, setSelectedPatientId] = useState('');
+  
+  
+
+
+  const navigate = useNavigate();
+
+  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,6 +79,57 @@ export default function PatientPage() {
 
     fetchData();
   }, []); 
+
+
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedAction('');
+    setSelectedPatientId('');
+  };
+
+  const handleActionSelect = (event) => {
+    setSelectedAction(event.target.value);
+  };
+  const sendAction = async () => {
+    try {
+      
+      const updatedPatientInfo = {
+        
+        status: selectedAction,
+      };
+  
+      await axios.put(`http://localhost:8080/api/v1/patients/${selectedPatientId}`, updatedPatientInfo);
+    
+
+      toast.success(`Patient ${selectedPatientId} sent to the ${selectedAction}`, {
+        position: "top-right", 
+        autoClose: 1000, 
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true, 
+        draggable: true, 
+        progress: undefined, 
+        
+      });
+              
+      setTimeout(() => {
+      closeModal();
+
+      // Reload the page
+      window.location.reload();
+    }, 2000); // Adjust the delay as needed
+     
+    } catch (err) {
+
+      toast.error(`Could not send Patient ${selectedPatientId} to the ${selectedAction}`);
+      console.error(err)
+    }
+    closeModal();
+  };
+  
+  
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -72,6 +146,40 @@ export default function PatientPage() {
       return;
     }
     setSelected([]);
+  };
+
+  const handleModal = (event, patientId) => {
+    setSelectedPatientId(patientId);
+    setModalOpen(true);
+  };
+
+  const handleDelete = async (event, patientId) => {
+    console.log('handleDelete is being called'); 
+    try {      
+      const response = await axios.delete(`http://localhost:8080/api/v1/patients/${patientId}`);
+     
+      console.log(response.data);
+      
+      toast.success("Patient deleted successfully", {
+        position: "top-right", 
+        autoClose: 1000, 
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true, 
+        draggable: true, 
+        progress: undefined, 
+        
+      });   
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+
+    } catch (errr) {
+      toast.error('Something went wrong');
+
+      console.error(errr);
+    }
   };
 
   const handleClick = (event, name) => {
@@ -111,12 +219,51 @@ export default function PatientPage() {
     comparator: getComparator(order, orderBy),
     filterName,
   });
+
+  const handleProfile = (event,patientId) => {
+    navigate(`/patientprofile?patientId=${patientId}`);
+    
+  };
   
 
   const notFound = !dataFiltered.length && !!filterName;
 
-  return (
+  return (    
     <Container>
+<Modal open={modalOpen} onClose={closeModal}>
+  <div className="modal-content">
+    <Typography variant="h6">Patient ID: {selectedPatientId}</Typography>
+   
+    <FormControl variant="outlined" fullWidth>
+      <InputLabel id="action">Action</InputLabel>
+      <Select
+        id="action"
+        name="action"
+        labelId="action-label"
+        label="Action"
+        value={selectedAction}
+        onChange={handleActionSelect}
+        required
+      >
+        <MenuItem value="">
+          <em>Select</em>
+        </MenuItem>
+        <MenuItem value="Triage">Send to Triage</MenuItem>
+        <MenuItem value="Doctor">Send to Doctor</MenuItem>
+        <MenuItem value="Lab">Send to Lab</MenuItem>
+        <MenuItem value="Pharmacy">Send to Pharmacy</MenuItem>
+        <MenuItem value="Accounts">Send to Accounts</MenuItem>
+      </Select>
+    </FormControl>
+
+    <Button variant="contained" color="primary" onClick={sendAction}>
+      Save Action
+    </Button>
+    
+  </div>
+</Modal>
+
+
          {loading && (
       <div>
         
@@ -135,7 +282,7 @@ export default function PatientPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Patients</Typography>
 
-        <Button variant="contained" color="inherit"   startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button variant="contained" color="inherit"  onClick={() => navigate('/createPatient')}  startIcon={<Iconify icon="eva:plus-fill" />}>
           New Patient
         </Button>
       </Stack>
@@ -165,7 +312,9 @@ export default function PatientPage() {
                   { id: 'insuranceDetails', label: 'InsuranceDetails' },
                   { id: 'isVerified', label: 'Verified', align: 'center' },
                   { id: 'status', label: 'Status' },
+                  {id: ''},
                   { id: '' },
+                  {id:''},
                 ]}
               />
               <TableBody>
@@ -180,8 +329,12 @@ export default function PatientPage() {
                       insuranceDetails={row.insuranceDetails}
                       age={row.age}
                       isVerified={row.isVerified}
+                      status={row.status}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
+                      handleModal={(event) => handleModal(event, row.patientId)}
+                      handleDelete={(event) => handleDelete(event, row.patientId)}
+                      handleProfile={(event) => handleProfile(event, row.patientId) }
                     />
                   ))}
 
@@ -206,8 +359,10 @@ export default function PatientPage() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
+     
       </div>
     )}
+     <ToastContainer />
     </Container>
   );
 }
