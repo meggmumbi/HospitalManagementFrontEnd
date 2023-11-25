@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { createContext, useState } from 'react';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -27,7 +27,12 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
+// Create Context
+// export const UserDataContext = createContext();
+
 export default function LoginView() {
+  // const { setUserData } = useContext(UserDataContext);
+  
   const theme = useTheme();
 
   const router = useRouter();
@@ -51,6 +56,7 @@ export default function LoginView() {
   };
 
   const handleClick = async () => {
+    console.log(formData.email)
     console.log(formData.password)
     try {
       const response = await fetch('http://localhost:8080/api/v1/doctors/login', {
@@ -60,14 +66,18 @@ export default function LoginView() {
          
         },
         body: JSON.stringify({
-          username: formData.email,     // Use the user's email input from the state
-          password: formData.password, // Use the user's password input from the state
+          username: formData.email, 
+          password: formData.password,
         }),
+       
       });
   
+      // console.log(formData.email);
+      // console.log(formData.password);
       if (response.ok) {
         const userData = await response.json(); 
         setUser(userData); 
+        console.log(userData);
        
         router.push('dashboard');
       } else {
@@ -75,18 +85,21 @@ export default function LoginView() {
          // Display an error toast message when login fails
          toast.error('Login failed', { position: 'top-right' });         
          console.error('Login failed');
+         console.log(response);
+     
       }
     } catch (error) {
       // Handle any network errors
       toast.error('Network error', { position: 'top-right' });         
       console.error('Network error:', error);
+      // router.push('dashboard');
     }
   };
 
   const renderForm = (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address"  
+        <TextField name="email" label="Username"  
           value={formData.email}
           onChange={handleChange} />
 

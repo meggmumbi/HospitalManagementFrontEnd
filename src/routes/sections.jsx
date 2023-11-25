@@ -9,12 +9,17 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const PatientPage = lazy(() => import('src/pages/patient'));
+export const BillPage = lazy(() => import('src/pages/bill'));
 export const LabPage = lazy(() => import('src/pages/labs'));
+export const AppointmentPage = lazy(() => import('src/pages/appointments'));
 export const PharmacyPage = lazy(() => import('src/pages/pharmacy'));
 export const RecordPage = lazy(() => import('src/pages/pharmacy-records'));
 export const HospitalPage = lazy(() => import('src/pages/hospital'));
 export const MedicalHistoryPage = lazy(() => import('src/pages/medicalHistory'));
 export const CreateNewPatientPage = lazy(() => import('src/pages/create-new-patient'));
+export const CreateNewAppointmentPage = lazy(() => import('src/pages/create-new-appoinment'));
+export const CreateNewUserPage = lazy(() => import('src/pages/create-new-user'));
+export const CreateNewBillPage = lazy(() => import('src/pages/create-new-bill'));
 export const CreateNewItemPage = lazy(() => import('src/pages/create-new-item'));
 export const CreateNewBranchPage = lazy(() => import('src/pages/create-hospital-branch'));
 export const TriagePage = lazy(() => import('src/pages/triage-form'));
@@ -39,6 +44,8 @@ export default function Router() {
       children: [
         { path: 'dashboard', element: <IndexPage />},
         { path: 'user', element: <UserPage /> },
+        { path: 'appointment', element: <AppointmentPage /> },
+        { path: 'bill', element: <BillPage /> },
         { path: 'patients', element: <PatientPage /> },
         { path: 'labs', element: <LabPage /> },
         { path: 'products', element: <ProductsPage /> },
@@ -47,6 +54,9 @@ export default function Router() {
         { path: 'hospital', element: <HospitalPage /> },
         { path: 'medicalHistory', element: <MedicalHistoryPage /> },
         { path: 'createPatient', element: <CreateNewPatientPage /> },
+        { path: 'createAppointment', element: <CreateNewAppointmentPage /> },
+        { path: 'createBill', element: <CreateNewBillPage /> },
+        { path: 'createUser', element: <CreateNewUserPage /> },
         { path: 'createItem', element: <CreateNewItemPage /> },
         { path: 'createBranch', element: <CreateNewBranchPage /> },
         { path: 'patientprofile', element: <PatientProfilePage /> },
