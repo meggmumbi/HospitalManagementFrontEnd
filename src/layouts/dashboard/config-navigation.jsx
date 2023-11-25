@@ -15,17 +15,17 @@ const navConfig = [
   },
   {
     title: 'Appointments',
-    path: '',
+    path: '/appointment',
     icon: icon('ic_stethoscope'),
   },
   {
     title: 'Patient',
-    path: '/patients',
+    path: '/labs',
     icon: icon('ic_patient'),
   },
   {
     title: 'Doctors',
-    path: '',
+    path: '/user',
     icon: icon('ic_doctor'),
   },
   {
@@ -35,19 +35,19 @@ const navConfig = [
   },
   {
     title: 'Payments',
-    path: '',
+    path: '/bill',
     icon: icon('ic_payments'),
   },
-  {
-    title: 'Departments',
-    path: '',
-    icon: icon('ic_department'),
-  },
-  {
-    title: 'Labs',
-    path: '/labs',
-    icon: icon('ic_laboratory'),
-  },
+  // {
+  //   title: 'Departments',
+  //   path: '',
+  //   icon: icon('ic_department'),
+  // },
+  // {
+  //   title: 'Labs',
+  //   path: '/labs',
+  //   icon: icon('ic_laboratory'),
+  // },
   {
     title: 'Hospital',
     path: '/hospital',
@@ -58,11 +58,11 @@ const navConfig = [
     path: '/medicalHistory',
     icon: icon('ic_medical-records'),
   },
-  {
-    title: 'user',
-    path: '/user',
-    icon: icon('ic_user'),
-  },
+  // {
+  //   title: 'user',
+  //   path: '/user',
+  //   icon: icon('ic_user'),
+  // },
   // {
   //   title: 'login',
   //   path: '/login',

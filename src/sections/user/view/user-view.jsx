@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+import axios from 'axios';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { users } from 'src/_mock/user';
+// import { users } from 'src/_mock/user';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -37,6 +39,14 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [users, setUsers] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -44,6 +54,21 @@ export default function UserPage() {
       setOrderBy(id);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/doctors');
+        setUsers(response.data); 
+        setLoading(false);
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); 
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -97,9 +122,9 @@ export default function UserPage() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Users</Typography>
+        <Typography variant="h4">Doctors</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button variant="contained" color="inherit"  onClick={() => navigate('/createUser')}  startIcon={<Iconify icon="eva:plus-fill" />}>
           New User
         </Button>
       </Stack>
@@ -123,10 +148,10 @@ export default function UserPage() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
+                  { id: 'company', label: 'Email' },
                   { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'isVerified', label: 'Specialization', align: 'center' },
+                  { id: 'status', label: 'Contacts' },
                   { id: '' },
                 ]}
               />
@@ -136,13 +161,13 @@ export default function UserPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      name={row.name}
+                      name={row.username}
                       role={row.role}
-                      status={row.status}
-                      company={row.company}
+                      status={row.contacts}
+                      company={row.email}
                       avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
+                      isVerified={row.specialization}
+                      selected={selected.indexOf(row.username) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />
                   ))}
